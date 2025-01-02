@@ -1,0 +1,403 @@
+2024-10-04 00:01:44,754 INFO     Starting server at tcp:port=8000:interface=127.0.0.1
+2024-10-04 00:01:44,754 INFO     HTTP/2 support not enabled (install the http2 and tls Twisted extras)
+2024-10-04 00:01:44,755 INFO     Configuring endpoint tcp:port=8000:interface=127.0.0.1
+2024-10-04 00:01:44,755 INFO     Listening on TCP address 127.0.0.1:8000
+Unauthorized: /
+2024-10-04 00:01:58,086 WARNING  Unauthorized: /
+Unauthorized: /
+2024-10-04 00:02:08,022 WARNING  Unauthorized: /
+Not Found: /static/rest_framework/css/bootstrap.min.css
+2024-10-04 00:02:08,066 WARNING  Not Found: /static/rest_framework/css/bootstrap.min.css
+Not Found: /static/rest_framework/css/prettify.css
+2024-10-04 00:02:08,075 WARNING  Not Found: /static/rest_framework/css/prettify.css
+Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+2024-10-04 00:02:08,077 WARNING  Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+Not Found: /static/rest_framework/css/default.css
+2024-10-04 00:02:08,077 WARNING  Not Found: /static/rest_framework/css/default.css
+Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+2024-10-04 00:02:08,078 WARNING  Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+Not Found: /static/rest_framework/js/ajax-form.js
+2024-10-04 00:02:08,078 WARNING  Not Found: /static/rest_framework/js/ajax-form.js
+Not Found: /static/rest_framework/js/csrf.js
+2024-10-04 00:02:08,101 WARNING  Not Found: /static/rest_framework/js/csrf.js
+Not Found: /static/rest_framework/js/bootstrap.min.js
+2024-10-04 00:02:08,125 WARNING  Not Found: /static/rest_framework/js/bootstrap.min.js
+Not Found: /static/rest_framework/js/prettify-min.js
+2024-10-04 00:02:08,125 WARNING  Not Found: /static/rest_framework/js/prettify-min.js
+Not Found: /static/rest_framework/js/default.js
+2024-10-04 00:02:08,129 WARNING  Not Found: /static/rest_framework/js/default.js
+Not Found: /static/rest_framework/js/load-ajax-form.js
+2024-10-04 00:02:08,129 WARNING  Not Found: /static/rest_framework/js/load-ajax-form.js
+Unauthorized: /
+2024-10-04 00:02:08,266 WARNING  Unauthorized: /
+Not Found: /static/rest_framework/css/bootstrap.min.css
+2024-10-04 00:02:08,323 WARNING  Not Found: /static/rest_framework/css/bootstrap.min.css
+Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+2024-10-04 00:02:08,324 WARNING  Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+2024-10-04 00:02:08,324 WARNING  Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+Not Found: /static/rest_framework/css/default.css
+2024-10-04 00:02:08,324 WARNING  Not Found: /static/rest_framework/css/default.css
+Not Found: /static/rest_framework/css/prettify.css
+2024-10-04 00:02:08,325 WARNING  Not Found: /static/rest_framework/css/prettify.css
+Not Found: /static/rest_framework/js/ajax-form.js
+2024-10-04 00:02:08,326 WARNING  Not Found: /static/rest_framework/js/ajax-form.js
+Not Found: /static/rest_framework/js/csrf.js
+2024-10-04 00:02:08,375 WARNING  Not Found: /static/rest_framework/js/csrf.js
+Not Found: /static/rest_framework/js/bootstrap.min.js
+2024-10-04 00:02:08,375 WARNING  Not Found: /static/rest_framework/js/bootstrap.min.js
+Not Found: /static/rest_framework/js/default.js
+2024-10-04 00:02:08,375 WARNING  Not Found: /static/rest_framework/js/default.js
+Not Found: /static/rest_framework/js/prettify-min.js
+2024-10-04 00:02:08,376 WARNING  Not Found: /static/rest_framework/js/prettify-min.js
+Not Found: /static/rest_framework/js/load-ajax-form.js
+2024-10-04 00:02:08,377 WARNING  Not Found: /static/rest_framework/js/load-ajax-form.js
+Unauthorized: /
+2024-10-04 00:02:08,476 WARNING  Unauthorized: /
+Not Found: /static/rest_framework/css/prettify.css
+2024-10-04 00:02:08,529 WARNING  Not Found: /static/rest_framework/css/prettify.css
+Not Found: /static/rest_framework/js/ajax-form.js
+2024-10-04 00:02:08,529 WARNING  Not Found: /static/rest_framework/js/ajax-form.js
+Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+2024-10-04 00:02:08,530 WARNING  Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+2024-10-04 00:02:08,531 WARNING  Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+Not Found: /static/rest_framework/css/bootstrap.min.css
+2024-10-04 00:02:08,532 WARNING  Not Found: /static/rest_framework/css/bootstrap.min.css
+Not Found: /static/rest_framework/css/default.css
+2024-10-04 00:02:08,532 WARNING  Not Found: /static/rest_framework/css/default.css
+Not Found: /static/rest_framework/js/bootstrap.min.js
+2024-10-04 00:02:08,582 WARNING  Not Found: /static/rest_framework/js/bootstrap.min.js
+Not Found: /static/rest_framework/js/csrf.js
+2024-10-04 00:02:08,583 WARNING  Not Found: /static/rest_framework/js/csrf.js
+Not Found: /static/rest_framework/js/default.js
+2024-10-04 00:02:08,585 WARNING  Not Found: /static/rest_framework/js/default.js
+Not Found: /static/rest_framework/js/load-ajax-form.js
+2024-10-04 00:02:08,586 WARNING  Not Found: /static/rest_framework/js/load-ajax-form.js
+Not Found: /static/rest_framework/js/prettify-min.js
+2024-10-04 00:02:08,587 WARNING  Not Found: /static/rest_framework/js/prettify-min.js
+Unauthorized: /
+2024-10-04 00:02:10,550 WARNING  Unauthorized: /
+Not Found: /static/rest_framework/css/prettify.css
+2024-10-04 00:02:10,605 WARNING  Not Found: /static/rest_framework/css/prettify.css
+Not Found: /static/rest_framework/css/default.css
+2024-10-04 00:02:10,605 WARNING  Not Found: /static/rest_framework/css/default.css
+Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+2024-10-04 00:02:10,605 WARNING  Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+Not Found: /static/rest_framework/css/bootstrap.min.css
+2024-10-04 00:02:10,605 WARNING  Not Found: /static/rest_framework/css/bootstrap.min.css
+Not Found: /static/rest_framework/js/ajax-form.js
+2024-10-04 00:02:10,608 WARNING  Not Found: /static/rest_framework/js/ajax-form.js
+Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+2024-10-04 00:02:10,609 WARNING  Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+Not Found: /static/rest_framework/js/csrf.js
+2024-10-04 00:02:10,656 WARNING  Not Found: /static/rest_framework/js/csrf.js
+Not Found: /static/rest_framework/js/bootstrap.min.js
+2024-10-04 00:02:10,658 WARNING  Not Found: /static/rest_framework/js/bootstrap.min.js
+Not Found: /static/rest_framework/js/prettify-min.js
+2024-10-04 00:02:10,658 WARNING  Not Found: /static/rest_framework/js/prettify-min.js
+Not Found: /static/rest_framework/js/load-ajax-form.js
+2024-10-04 00:02:10,658 WARNING  Not Found: /static/rest_framework/js/load-ajax-form.js
+Not Found: /static/rest_framework/js/default.js
+2024-10-04 00:02:10,658 WARNING  Not Found: /static/rest_framework/js/default.js
+Unauthorized: /
+2024-10-04 00:02:10,752 WARNING  Unauthorized: /
+Not Found: /static/rest_framework/css/bootstrap.min.css
+2024-10-04 00:02:10,806 WARNING  Not Found: /static/rest_framework/css/bootstrap.min.css
+Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+2024-10-04 00:02:10,807 WARNING  Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+Not Found: /static/rest_framework/css/prettify.css
+2024-10-04 00:02:10,813 WARNING  Not Found: /static/rest_framework/css/prettify.css
+Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+2024-10-04 00:02:10,813 WARNING  Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+Not Found: /static/rest_framework/css/default.css
+2024-10-04 00:02:10,813 WARNING  Not Found: /static/rest_framework/css/default.css
+Not Found: /static/rest_framework/js/ajax-form.js
+2024-10-04 00:02:10,814 WARNING  Not Found: /static/rest_framework/js/ajax-form.js
+Not Found: /static/rest_framework/js/bootstrap.min.js
+2024-10-04 00:02:10,856 WARNING  Not Found: /static/rest_framework/js/bootstrap.min.js
+Not Found: /static/rest_framework/js/csrf.js
+2024-10-04 00:02:10,858 WARNING  Not Found: /static/rest_framework/js/csrf.js
+Not Found: /static/rest_framework/js/prettify-min.js
+2024-10-04 00:02:10,860 WARNING  Not Found: /static/rest_framework/js/prettify-min.js
+Not Found: /static/rest_framework/js/load-ajax-form.js
+2024-10-04 00:02:10,861 WARNING  Not Found: /static/rest_framework/js/load-ajax-form.js
+Not Found: /static/rest_framework/js/default.js
+2024-10-04 00:02:10,864 WARNING  Not Found: /static/rest_framework/js/default.js
+Unauthorized: /
+2024-10-04 00:02:10,979 WARNING  Unauthorized: /
+Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+2024-10-04 00:02:11,035 WARNING  Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+Not Found: /static/rest_framework/css/bootstrap.min.css
+2024-10-04 00:02:11,035 WARNING  Not Found: /static/rest_framework/css/bootstrap.min.css
+Not Found: /static/rest_framework/js/ajax-form.js
+2024-10-04 00:02:11,037 WARNING  Not Found: /static/rest_framework/js/ajax-form.js
+Not Found: /static/rest_framework/css/prettify.css
+2024-10-04 00:02:11,041 WARNING  Not Found: /static/rest_framework/css/prettify.css
+Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+2024-10-04 00:02:11,041 WARNING  Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+Not Found: /static/rest_framework/css/default.css
+2024-10-04 00:02:11,042 WARNING  Not Found: /static/rest_framework/css/default.css
+Not Found: /static/rest_framework/js/csrf.js
+2024-10-04 00:02:11,087 WARNING  Not Found: /static/rest_framework/js/csrf.js
+Not Found: /static/rest_framework/js/bootstrap.min.js
+2024-10-04 00:02:11,089 WARNING  Not Found: /static/rest_framework/js/bootstrap.min.js
+Not Found: /static/rest_framework/js/prettify-min.js
+2024-10-04 00:02:11,090 WARNING  Not Found: /static/rest_framework/js/prettify-min.js
+Not Found: /static/rest_framework/js/default.js
+2024-10-04 00:02:11,092 WARNING  Not Found: /static/rest_framework/js/default.js
+Not Found: /static/rest_framework/js/load-ajax-form.js
+2024-10-04 00:02:11,093 WARNING  Not Found: /static/rest_framework/js/load-ajax-form.js
+Unauthorized: /
+2024-10-04 00:02:11,228 WARNING  Unauthorized: /
+Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+2024-10-04 00:02:11,282 WARNING  Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+Not Found: /static/rest_framework/css/prettify.css
+2024-10-04 00:02:11,285 WARNING  Not Found: /static/rest_framework/css/prettify.css
+Not Found: /static/rest_framework/css/default.css
+2024-10-04 00:02:11,285 WARNING  Not Found: /static/rest_framework/css/default.css
+Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+2024-10-04 00:02:11,285 WARNING  Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+Not Found: /static/rest_framework/css/bootstrap.min.css
+2024-10-04 00:02:11,286 WARNING  Not Found: /static/rest_framework/css/bootstrap.min.css
+Not Found: /static/rest_framework/js/ajax-form.js
+2024-10-04 00:02:11,286 WARNING  Not Found: /static/rest_framework/js/ajax-form.js
+Not Found: /static/rest_framework/js/csrf.js
+2024-10-04 00:02:11,331 WARNING  Not Found: /static/rest_framework/js/csrf.js
+Not Found: /static/rest_framework/js/load-ajax-form.js
+2024-10-04 00:02:11,335 WARNING  Not Found: /static/rest_framework/js/load-ajax-form.js
+Not Found: /static/rest_framework/js/prettify-min.js
+2024-10-04 00:02:11,335 WARNING  Not Found: /static/rest_framework/js/prettify-min.js
+Not Found: /static/rest_framework/js/bootstrap.min.js
+2024-10-04 00:02:11,335 WARNING  Not Found: /static/rest_framework/js/bootstrap.min.js
+Not Found: /static/rest_framework/js/default.js
+2024-10-04 00:02:11,335 WARNING  Not Found: /static/rest_framework/js/default.js
+127.0.0.1:56182 - - [04/Oct/2024:00:01:58] "GET /" 401 183
+127.0.0.1:56184 - - [04/Oct/2024:00:02:08] "GET /" 401 4989
+127.0.0.1:56184 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/css/bootstrap.min.css" 404 9586
+127.0.0.1:56186 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/css/prettify.css" 404 9571
+127.0.0.1:56185 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/css/bootstrap-tweaks.css" 404 9595
+127.0.0.1:56187 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/css/default.css" 404 9568
+127.0.0.1:56188 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/js/jquery-3.7.1.min.js" 404 9589
+127.0.0.1:56189 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/js/ajax-form.js" 404 9568
+127.0.0.1:56184 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/js/csrf.js" 404 9553
+127.0.0.1:56186 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/js/bootstrap.min.js" 404 9580
+127.0.0.1:56187 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/js/prettify-min.js" 404 9577
+127.0.0.1:56185 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/js/default.js" 404 9562
+127.0.0.1:56188 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/js/load-ajax-form.js" 404 9583
+127.0.0.1:56188 - - [04/Oct/2024:00:02:08] "GET /" 401 4989
+127.0.0.1:56188 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/css/bootstrap.min.css" 404 9586
+127.0.0.1:56185 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/css/bootstrap-tweaks.css" 404 9595
+127.0.0.1:56184 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/js/jquery-3.7.1.min.js" 404 9589
+127.0.0.1:56186 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/css/default.css" 404 9568
+127.0.0.1:56187 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/css/prettify.css" 404 9571
+127.0.0.1:56189 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/js/ajax-form.js" 404 9568
+127.0.0.1:56188 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/js/csrf.js" 404 9553
+127.0.0.1:56185 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/js/bootstrap.min.js" 404 9580
+127.0.0.1:56186 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/js/default.js" 404 9562
+127.0.0.1:56184 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/js/prettify-min.js" 404 9577
+127.0.0.1:56189 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/js/load-ajax-form.js" 404 9583
+127.0.0.1:56189 - - [04/Oct/2024:00:02:08] "GET /" 401 4989
+127.0.0.1:56186 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/css/prettify.css" 404 9571
+127.0.0.1:56187 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/js/ajax-form.js" 404 9568
+127.0.0.1:56188 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/js/jquery-3.7.1.min.js" 404 9589
+127.0.0.1:56184 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/css/bootstrap-tweaks.css" 404 9595
+127.0.0.1:56189 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/css/bootstrap.min.css" 404 9586
+127.0.0.1:56185 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/css/default.css" 404 9568
+127.0.0.1:56187 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/js/bootstrap.min.js" 404 9580
+127.0.0.1:56186 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/js/csrf.js" 404 9553
+127.0.0.1:56184 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/js/default.js" 404 9562
+127.0.0.1:56185 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/js/load-ajax-form.js" 404 9583
+127.0.0.1:56188 - - [04/Oct/2024:00:02:08] "GET /static/rest_framework/js/prettify-min.js" 404 9577
+127.0.0.1:56185 - - [04/Oct/2024:00:02:10] "GET /" 401 4989
+127.0.0.1:56184 - - [04/Oct/2024:00:02:10] "GET /static/rest_framework/css/prettify.css" 404 9571
+127.0.0.1:56186 - - [04/Oct/2024:00:02:10] "GET /static/rest_framework/css/default.css" 404 9568
+127.0.0.1:56187 - - [04/Oct/2024:00:02:10] "GET /static/rest_framework/js/jquery-3.7.1.min.js" 404 9589
+127.0.0.1:56185 - - [04/Oct/2024:00:02:10] "GET /static/rest_framework/css/bootstrap.min.css" 404 9586
+127.0.0.1:56189 - - [04/Oct/2024:00:02:10] "GET /static/rest_framework/js/ajax-form.js" 404 9568
+127.0.0.1:56188 - - [04/Oct/2024:00:02:10] "GET /static/rest_framework/css/bootstrap-tweaks.css" 404 9595
+127.0.0.1:56186 - - [04/Oct/2024:00:02:10] "GET /static/rest_framework/js/csrf.js" 404 9553
+127.0.0.1:56184 - - [04/Oct/2024:00:02:10] "GET /static/rest_framework/js/bootstrap.min.js" 404 9580
+127.0.0.1:56187 - - [04/Oct/2024:00:02:10] "GET /static/rest_framework/js/prettify-min.js" 404 9577
+127.0.0.1:56188 - - [04/Oct/2024:00:02:10] "GET /static/rest_framework/js/load-ajax-form.js" 404 9583
+127.0.0.1:56185 - - [04/Oct/2024:00:02:10] "GET /static/rest_framework/js/default.js" 404 9562
+127.0.0.1:56185 - - [04/Oct/2024:00:02:10] "GET /" 401 4989
+127.0.0.1:56185 - - [04/Oct/2024:00:02:10] "GET /static/rest_framework/css/bootstrap.min.css" 404 9586
+127.0.0.1:56188 - - [04/Oct/2024:00:02:10] "GET /static/rest_framework/css/bootstrap-tweaks.css" 404 9595
+127.0.0.1:56184 - - [04/Oct/2024:00:02:10] "GET /static/rest_framework/css/prettify.css" 404 9571
+127.0.0.1:56186 - - [04/Oct/2024:00:02:10] "GET /static/rest_framework/js/jquery-3.7.1.min.js" 404 9589
+127.0.0.1:56187 - - [04/Oct/2024:00:02:10] "GET /static/rest_framework/css/default.css" 404 9568
+127.0.0.1:56189 - - [04/Oct/2024:00:02:10] "GET /static/rest_framework/js/ajax-form.js" 404 9568
+127.0.0.1:56188 - - [04/Oct/2024:00:02:10] "GET /static/rest_framework/js/bootstrap.min.js" 404 9580
+127.0.0.1:56185 - - [04/Oct/2024:00:02:10] "GET /static/rest_framework/js/csrf.js" 404 9553
+127.0.0.1:56186 - - [04/Oct/2024:00:02:10] "GET /static/rest_framework/js/prettify-min.js" 404 9577
+127.0.0.1:56187 - - [04/Oct/2024:00:02:10] "GET /static/rest_framework/js/load-ajax-form.js" 404 9583
+127.0.0.1:56184 - - [04/Oct/2024:00:02:10] "GET /static/rest_framework/js/default.js" 404 9562
+127.0.0.1:56184 - - [04/Oct/2024:00:02:10] "GET /" 401 4989
+127.0.0.1:56187 - - [04/Oct/2024:00:02:11] "GET /static/rest_framework/css/bootstrap-tweaks.css" 404 9595
+127.0.0.1:56184 - - [04/Oct/2024:00:02:11] "GET /static/rest_framework/css/bootstrap.min.css" 404 9586
+127.0.0.1:56189 - - [04/Oct/2024:00:02:11] "GET /static/rest_framework/js/ajax-form.js" 404 9568
+127.0.0.1:56186 - - [04/Oct/2024:00:02:11] "GET /static/rest_framework/css/prettify.css" 404 9571
+127.0.0.1:56188 - - [04/Oct/2024:00:02:11] "GET /static/rest_framework/js/jquery-3.7.1.min.js" 404 9589
+127.0.0.1:56185 - - [04/Oct/2024:00:02:11] "GET /static/rest_framework/css/default.css" 404 9568
+127.0.0.1:56187 - - [04/Oct/2024:00:02:11] "GET /static/rest_framework/js/csrf.js" 404 9553
+127.0.0.1:56184 - - [04/Oct/2024:00:02:11] "GET /static/rest_framework/js/bootstrap.min.js" 404 9580
+127.0.0.1:56189 - - [04/Oct/2024:00:02:11] "GET /static/rest_framework/js/prettify-min.js" 404 9577
+127.0.0.1:56186 - - [04/Oct/2024:00:02:11] "GET /static/rest_framework/js/default.js" 404 9562
+127.0.0.1:56188 - - [04/Oct/2024:00:02:11] "GET /static/rest_framework/js/load-ajax-form.js" 404 9583
+127.0.0.1:56188 - - [04/Oct/2024:00:02:11] "GET /" 401 4989
+127.0.0.1:56187 - - [04/Oct/2024:00:02:11] "GET /static/rest_framework/js/jquery-3.7.1.min.js" 404 9589
+127.0.0.1:56189 - - [04/Oct/2024:00:02:11] "GET /static/rest_framework/css/prettify.css" 404 9571
+127.0.0.1:56184 - - [04/Oct/2024:00:02:11] "GET /static/rest_framework/css/default.css" 404 9568
+127.0.0.1:56186 - - [04/Oct/2024:00:02:11] "GET /static/rest_framework/css/bootstrap-tweaks.css" 404 9595
+127.0.0.1:56188 - - [04/Oct/2024:00:02:11] "GET /static/rest_framework/css/bootstrap.min.css" 404 9586
+127.0.0.1:56185 - - [04/Oct/2024:00:02:11] "GET /static/rest_framework/js/ajax-form.js" 404 9568
+127.0.0.1:56187 - - [04/Oct/2024:00:02:11] "GET /static/rest_framework/js/csrf.js" 404 9553
+127.0.0.1:56188 - - [04/Oct/2024:00:02:11] "GET /static/rest_framework/js/load-ajax-form.js" 404 9583
+127.0.0.1:56184 - - [04/Oct/2024:00:02:11] "GET /static/rest_framework/js/prettify-min.js" 404 9577
+127.0.0.1:56189 - - [04/Oct/2024:00:02:11] "GET /static/rest_framework/js/bootstrap.min.js" 404 9580
+127.0.0.1:56186 - - [04/Oct/2024:00:02:11] "GET /static/rest_framework/js/default.js" 404 9562
+Unauthorized: /
+2024-10-04 00:02:11,570 WARNING  Unauthorized: /
+Not Found: /static/rest_framework/js/ajax-form.js
+2024-10-04 00:02:11,618 WARNING  Not Found: /static/rest_framework/js/ajax-form.js
+Not Found: /static/rest_framework/css/default.css
+2024-10-04 00:02:11,626 WARNING  Not Found: /static/rest_framework/css/default.css
+Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+2024-10-04 00:02:11,627 WARNING  Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+Not Found: /static/rest_framework/css/prettify.css
+2024-10-04 00:02:11,627 WARNING  Not Found: /static/rest_framework/css/prettify.css
+Not Found: /static/rest_framework/css/bootstrap.min.css
+2024-10-04 00:02:11,628 WARNING  Not Found: /static/rest_framework/css/bootstrap.min.css
+Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+2024-10-04 00:02:11,639 WARNING  Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+Not Found: /static/rest_framework/js/csrf.js
+2024-10-04 00:02:11,674 WARNING  Not Found: /static/rest_framework/js/csrf.js
+Not Found: /static/rest_framework/js/bootstrap.min.js
+2024-10-04 00:02:11,681 WARNING  Not Found: /static/rest_framework/js/bootstrap.min.js
+Not Found: /static/rest_framework/js/prettify-min.js
+2024-10-04 00:02:11,681 WARNING  Not Found: /static/rest_framework/js/prettify-min.js
+Not Found: /static/rest_framework/js/default.js
+2024-10-04 00:02:11,682 WARNING  Not Found: /static/rest_framework/js/default.js
+Not Found: /static/rest_framework/js/load-ajax-form.js
+2024-10-04 00:02:11,682 WARNING  Not Found: /static/rest_framework/js/load-ajax-form.js
+Unauthorized: /
+2024-10-04 00:02:11,725 WARNING  Unauthorized: /
+Not Found: /static/rest_framework/css/bootstrap.min.css
+2024-10-04 00:02:11,785 WARNING  Not Found: /static/rest_framework/css/bootstrap.min.css
+Not Found: /static/rest_framework/css/default.css
+2024-10-04 00:02:11,785 WARNING  Not Found: /static/rest_framework/css/default.css
+Not Found: /static/rest_framework/css/prettify.css
+2024-10-04 00:02:11,786 WARNING  Not Found: /static/rest_framework/css/prettify.css
+Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+2024-10-04 00:02:11,787 WARNING  Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+Not Found: /static/rest_framework/js/ajax-form.js
+2024-10-04 00:02:11,788 WARNING  Not Found: /static/rest_framework/js/ajax-form.js
+Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+2024-10-04 00:02:11,791 WARNING  Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+Not Found: /static/rest_framework/js/csrf.js
+2024-10-04 00:02:11,839 WARNING  Not Found: /static/rest_framework/js/csrf.js
+Not Found: /static/rest_framework/js/bootstrap.min.js
+2024-10-04 00:02:11,840 WARNING  Not Found: /static/rest_framework/js/bootstrap.min.js
+Not Found: /static/rest_framework/js/load-ajax-form.js
+2024-10-04 00:02:11,841 WARNING  Not Found: /static/rest_framework/js/load-ajax-form.js
+Not Found: /static/rest_framework/js/prettify-min.js
+2024-10-04 00:02:11,842 WARNING  Not Found: /static/rest_framework/js/prettify-min.js
+Not Found: /static/rest_framework/js/default.js
+2024-10-04 00:02:11,844 WARNING  Not Found: /static/rest_framework/js/default.js
+Unauthorized: /
+2024-10-04 00:02:11,969 WARNING  Unauthorized: /
+Not Found: /static/rest_framework/js/ajax-form.js
+2024-10-04 00:02:12,025 WARNING  Not Found: /static/rest_framework/js/ajax-form.js
+Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+2024-10-04 00:02:12,026 WARNING  Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+Not Found: /static/rest_framework/css/default.css
+2024-10-04 00:02:12,028 WARNING  Not Found: /static/rest_framework/css/default.css
+Not Found: /static/rest_framework/css/bootstrap.min.css
+2024-10-04 00:02:12,030 WARNING  Not Found: /static/rest_framework/css/bootstrap.min.css
+Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+2024-10-04 00:02:12,030 WARNING  Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+Not Found: /static/rest_framework/css/prettify.css
+2024-10-04 00:02:12,031 WARNING  Not Found: /static/rest_framework/css/prettify.css
+Not Found: /static/rest_framework/js/bootstrap.min.js
+2024-10-04 00:02:12,082 WARNING  Not Found: /static/rest_framework/js/bootstrap.min.js
+Not Found: /static/rest_framework/js/csrf.js
+2024-10-04 00:02:12,083 WARNING  Not Found: /static/rest_framework/js/csrf.js
+Not Found: /static/rest_framework/js/prettify-min.js
+2024-10-04 00:02:12,090 WARNING  Not Found: /static/rest_framework/js/prettify-min.js
+Not Found: /static/rest_framework/js/load-ajax-form.js
+2024-10-04 00:02:12,091 WARNING  Not Found: /static/rest_framework/js/load-ajax-form.js
+Not Found: /static/rest_framework/js/default.js
+2024-10-04 00:02:12,092 WARNING  Not Found: /static/rest_framework/js/default.js
+Unauthorized: /
+2024-10-04 00:02:12,189 WARNING  Unauthorized: /
+Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+2024-10-04 00:02:12,246 WARNING  Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+Not Found: /static/rest_framework/css/bootstrap.min.css
+2024-10-04 00:02:12,247 WARNING  Not Found: /static/rest_framework/css/bootstrap.min.css
+Not Found: /static/rest_framework/css/prettify.css
+2024-10-04 00:02:12,247 WARNING  Not Found: /static/rest_framework/css/prettify.css
+Not Found: /static/rest_framework/js/ajax-form.js
+2024-10-04 00:02:12,250 WARNING  Not Found: /static/rest_framework/js/ajax-form.js
+Not Found: /static/rest_framework/css/default.css
+2024-10-04 00:02:12,250 WARNING  Not Found: /static/rest_framework/css/default.css
+Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+2024-10-04 00:02:12,258 WARNING  Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+Not Found: /static/rest_framework/js/csrf.js
+2024-10-04 00:02:12,302 WARNING  Not Found: /static/rest_framework/js/csrf.js
+Not Found: /static/rest_framework/js/prettify-min.js
+2024-10-04 00:02:12,303 WARNING  Not Found: /static/rest_framework/js/prettify-min.js
+Not Found: /static/rest_framework/js/load-ajax-form.js
+2024-10-04 00:02:12,304 WARNING  Not Found: /static/rest_framework/js/load-ajax-form.js
+Not Found: /static/rest_framework/js/default.js
+2024-10-04 00:02:12,305 WARNING  Not Found: /static/rest_framework/js/default.js
+Not Found: /static/rest_framework/js/bootstrap.min.js
+2024-10-04 00:02:12,305 WARNING  Not Found: /static/rest_framework/js/bootstrap.min.js
+Unauthorized: /
+2024-10-04 00:02:12,467 WARNING  Unauthorized: /
+Not Found: /static/rest_framework/js/ajax-form.js
+2024-10-04 00:02:12,520 WARNING  Not Found: /static/rest_framework/js/ajax-form.js
+Not Found: /static/rest_framework/css/bootstrap.min.css
+2024-10-04 00:02:12,521 WARNING  Not Found: /static/rest_framework/css/bootstrap.min.css
+Not Found: /static/rest_framework/css/default.css
+2024-10-04 00:02:12,525 WARNING  Not Found: /static/rest_framework/css/default.css
+Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+2024-10-04 00:02:12,528 WARNING  Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+Not Found: /static/rest_framework/css/prettify.css
+2024-10-04 00:02:12,529 WARNING  Not Found: /static/rest_framework/css/prettify.css
+Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+2024-10-04 00:02:12,532 WARNING  Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+Not Found: /static/rest_framework/js/csrf.js
+2024-10-04 00:02:12,565 WARNING  Not Found: /static/rest_framework/js/csrf.js
+Not Found: /static/rest_framework/js/bootstrap.min.js
+2024-10-04 00:02:12,578 WARNING  Not Found: /static/rest_framework/js/bootstrap.min.js
+Not Found: /static/rest_framework/js/prettify-min.js
+2024-10-04 00:02:12,582 WARNING  Not Found: /static/rest_framework/js/prettify-min.js
+Not Found: /static/rest_framework/js/default.js
+2024-10-04 00:02:12,584 WARNING  Not Found: /static/rest_framework/js/default.js
+Not Found: /static/rest_framework/js/load-ajax-form.js
+2024-10-04 00:02:12,584 WARNING  Not Found: /static/rest_framework/js/load-ajax-form.js
+Unauthorized: /
+2024-10-04 00:02:12,678 WARNING  Unauthorized: /
+Not Found: /static/rest_framework/css/default.css
+2024-10-04 00:02:12,744 WARNING  Not Found: /static/rest_framework/css/default.css
+Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+2024-10-04 00:02:12,745 WARNING  Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+Not Found: /static/rest_framework/css/prettify.css
+2024-10-04 00:02:12,745 WARNING  Not Found: /static/rest_framework/css/prettify.css
+Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+2024-10-04 00:02:12,747 WARNING  Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+Not Found: /static/rest_framework/js/ajax-form.js
+2024-10-04 00:02:12,747 WARNING  Not Found: /static/rest_framework/js/ajax-form.js
+Not Found: /static/rest_framework/css/bootstrap.min.css
+2024-10-04 00:02:12,747 WARNING  Not Found: /static/rest_framework/css/bootstrap.min.css
+Not Found: /static/rest_framework/js/bootstrap.min.js
+2024-10-04 00:02:12,799 WARNING  Not Found: /static/rest_framework/js/bootstrap.min.js
+Not Found: /static/rest_framework/js/prettify-min.js
+2024-10-04 00:02:12,799 WARNING  Not Found: /static/rest_framework/js/prettify-min.js
+Not Found: /static/rest_framework/js/default.js
+2024-10-04 00:02:12,800 WARNING  Not Found: /static/rest_framework/js/default.js
+Not Found: /static/rest_framework/js/load-ajax-form.js
+2024-10-04 00:02:12,800 WARNING  Not Found: /static/rest_framework/js/load-ajax-form.js
+Not Found: /static/rest_framework/js/csrf.js
+2024-10-04 00:02:12,800 WARNING  Not Found: /static/rest_framework/js/csrf.js

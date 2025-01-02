@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SMTP Servers</title>
+</head>
+<body>
+    <h1>SMTP Servers</h1>
+    <a href="{% url 'smtp-server-create' %}">Add New SMTP Server</a>
+    <ul>
+        {% for server in servers %}
+            <li>
+                <a href="{% url 'smtp-server-detail' server.pk %}">{{ server.name }}</a>
+                - <a href="{% url 'smtp-server-edit' server.pk %}">Edit</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

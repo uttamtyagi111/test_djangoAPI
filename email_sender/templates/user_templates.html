@@ -1,0 +1,31 @@
+<!-- user_templates.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Templates</title>
+</head>
+<body>
+    <h1>Your Templates</h1>
+    <ul>
+        {% for template in templates %}
+            <li>
+                <h2>{{ template.name }}</h2>
+                <div>
+                    <!-- Display the content of the template -->
+                    <textarea rows="10" cols="80" readonly>
+                        {{ template.content|safe }}
+                    </textarea>
+                </div>
+                <!-- Form to delete the template -->
+                <form method="post" action="{% url 'email-template-delete' template.pk %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Delete</button>
+                </form>
+                <!-- Link to edit the template -->
+                <a href="{% url 'edit_user_template' template.pk %}">Edit</a>
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'email-template-create' %}">Create New Template</a>
+</body>
+</html>

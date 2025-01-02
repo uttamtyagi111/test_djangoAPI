@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SMTP Server Detail</title>
+</head>
+<body>
+    <h1>{{ server.name }}</h1>
+    <p><strong>Host:</strong> {{ server.host }}</p>
+    <p><strong>Port:</strong> {{ server.port }}</p>
+    <p><strong>Username:</strong> {{ server.username }}</p>
+    <p><strong>Password:</strong> {{ server.password }}</p>
+    <p><strong>Use TLS:</strong> {{ server.use_tls }}</p>
+    <a href="{% url 'smtp-server-edit' server.pk %}">Edit</a>
+    <a href="{% url 'smtp-servers-list' %}">Back to List</a>
+</body>
+</html>

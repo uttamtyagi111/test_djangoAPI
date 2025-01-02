@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{%load static%}
+
+{% block title %}Send Emails{% endblock %}
+
+{% block content %}
+<h2>Select Senders and SMTP Servers</h2>
+
+<form id="emailForm" method="post" enctype="multipart/form-data" action="{% url 'send-emails' %}">
+    {% csrf_token %}
+
+    <!-- Display Name -->
+    <div>
+        <label for="display_name">Display Name:</label>
+        <input type="text" id="display_name" name="display_name" required>
+    </div>
+
+    <!-- Your Name -->
+    <div>
+        <label for="your_name">Your Name:</label>
+        <input type="text" id="your_name" name="your_name" required>
+    </div>
+
+    <!-- Your Company -->
+    <div>
+        <label for="your_company">Your Company:</label>
+        <input type="text" id="your_company" name="your_company" required>
+    </div>
+
+    <!-- Your Email -->
+    <div>
+        <label for="your_email">Your Email:</label>
+        <input type="email" id="your_email" name="your_email" required>
+    </div>
+
+    <!-- Contact Info -->
+    <div>
+        <label for="contact_info">Contact Info:</label>
+        <input type="text" id="contact_info" name="contact_info" required>
+    </div>
+
+    <!-- Website URL -->
+    <div>
+        <label for="website_url">Website URL:</label>
+        <input type="url" id="website_url" name="website_url" required>
+    </div>
+
+    <!-- Email List File Upload -->
+    <div>
+        <label for="email_list">Upload Email List (CSV):</label>
+        <input type="file" id="email_list" name="email_list" accept=".csv" required>
+    </div>
+
+    <!-- Senders Section -->
+    <div>
+        <label for="senders">Select Senders:</label>
+        <select id="senders" name="sender_ids" multiple>
+            {% for sender in senders %}
+                <option value="{{ sender.id }}">{{ sender.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="button" onclick="addToSelected('senders', 'selectedSenders')">Add</button>
+        <ul id="selectedSenders"></ul>
+    </div>
+
+    <!-- SMTP Servers Section -->
+    <div>
+        <label for="smtpServers">Select SMTP Servers:</label>
+        <select id="smtpServers" name="smtp_server_ids" multiple>
+            {% for server in smtp_servers %}
+                <option value="{{ server.id }}">{{ server.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="button" onclick="addToSelected('smtpServers', 'selectedSMTPServers')">Add</button>
+        <ul id="selectedSMTPServers"></ul>
+    </div>
+
+    <!-- Email Template Section -->
+    <div>
+        <label for="template">Email Template:</label>
+        <select id="template" name="template_id">
+            {% for template in templates %}
+                <option value="{{ template.id }}">{{ template.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <button type="submit">Send Emails</button>
+</form>
+
+<script>
+    function addToSelected(selectId, listId) {
+        const select = document.getElementById(selectId);
+        const list = document.getElementById(listId);
+        const selectedOptions = Array.from(select.selectedOptions);
+        
+        selectedOptions.forEach(option => {
+            const li = document.createElement('li');
+            li.textContent = option.text;
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'Remove';
+            removeButton.onclick = () => {
+                list.removeChild(li);
+                option.selected = false;
+            };
+            li.appendChild(removeButton);
+            list.appendChild(li);
+        });
+    }
+</script>
+{% endblock %}

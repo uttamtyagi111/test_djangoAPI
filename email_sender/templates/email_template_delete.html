@@ -1,0 +1,16 @@
+<!-- email_template_delete.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Template</title>
+</head>
+<body>
+    <h1>Delete Template</h1>
+    <p>Are you sure you want to delete the template "{{ template.name }}"?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Delete</button>
+        <a href="{% url 'user_templates' %}">Cancel</a>
+    </form>
+</body>
+</html>

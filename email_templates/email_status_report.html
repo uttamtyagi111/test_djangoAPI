@@ -1,0 +1,59 @@
+<!-- email_status_report.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Status Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Email Status Analytics</h1>
+
+    <!-- Canvas for the Bar Chart -->
+    <canvas id="statusChart" width="400" height="200"></canvas>
+
+    <script>
+        // Fetch data from Django context
+        const dailyLabels = { daily_labelssafe };
+        const statusData = {daily_datasafe };
+
+        // Create datasets for each status type (e.g., "Sent", "Failed")
+        const datasets = Object.keys(statusData).map(status => ({
+            label: status,  // Status name (e.g., "Sent", "Failed")
+            data: statusData[status],  // Daily counts for that status
+            backgroundColor: getRandomColor(),  // Random color for each dataset
+            borderColor: getRandomColor(),
+            borderWidth: 1
+        }));
+
+        // Create the bar chart using Chart.js
+        const ctx = document.getElementById('statusChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',  // Bar chart
+            data: {
+                labels: dailyLabels,  // Days of the week
+                datasets: datasets  // Data for each status type
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Function to generate a random color
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+    </script>
+</body>
+</html>
+    

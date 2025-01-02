@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Senders List</title>
+</head>
+<body>
+    <h1>Senders List</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sender in senders %}
+            <tr>
+                <td>{{ sender.id }}</td>
+                <td>{{ sender.name }}</td>
+                <td>{{ sender.email }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'sender-create' %}">Create New Sender</a>
+</body>
+</html>

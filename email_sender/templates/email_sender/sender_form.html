@@ -1,0 +1,16 @@
+<!-- email_sender/templates/email_sender/sender_form.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Sender</title>
+</head>
+<body>
+    <h1>Add Sender</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Add Sender</button>
+    </form>
+</body>
+</html>

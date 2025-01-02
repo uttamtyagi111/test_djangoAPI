@@ -1,0 +1,19 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OTP Verification</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}"> <!-- Optional: for custom styling -->
+</head>
+<body>
+    <div class="container">
+        <h2>Verify Your Email</h2>
+        <p>Enter the 6-digit OTP sent to your email address.</p>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Verify OTP</button>
+        </form>
+    </div>
+</body>
+</html>

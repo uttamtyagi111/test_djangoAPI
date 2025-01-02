@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create New Sender</title>
+</head>
+<body>
+    <h1>Create New Sender</h1>
+    <form method="post" action="{% url 'sender-create' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+</body>
+</html>

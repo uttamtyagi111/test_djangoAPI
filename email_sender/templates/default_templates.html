@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Default Templates</title>
+</head>
+<body>
+    <h1>Default Templates</h1>
+    <ul>
+        {% for template in templates %}
+            <li>
+                {{ template.name }} - Path: {{ template.template_path }}
+                <a href="{% url 'edit_template' template.id %}">Edit</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

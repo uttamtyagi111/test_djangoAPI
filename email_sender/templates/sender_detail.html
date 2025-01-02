@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sender Detail</title>
+</head>
+<body>
+    <h1>Sender Details</h1>
+    <p><strong>ID:</strong> {{ sender.id }}</p>
+    <p><strong>Name:</strong> {{ sender.name }}</p>
+    <p><strong>Email:</strong> {{ sender.email }}</p>
+    <a href="{% url 'senders-list' %}">Back to List</a>
+    <a href="{% url 'sender-edit' sender.id %}">Edit Sender</a>
+</body>
+</html>
