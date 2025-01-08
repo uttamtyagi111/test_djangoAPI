@@ -11,7 +11,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from django.core.files.base import ContentFile
 from .models import EmailStatusLog 
 from subscriptions.models import UserProfile, Plan
-from .serializers import EmailStatusLogSerializer, EmailSendSerializer
+from .serializers import EmailStatusLogSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework import status,viewsets
@@ -21,8 +21,8 @@ from io import StringIO
 from django.template import Template, Context
 import csv,time,logging,os,boto3,time,uuid
 from django.conf import settings
-from .serializers import EmailSendSerializer,SMTPServerSerializer,UploadedFileSerializer
-from .models import   SMTPServer, UploadedFile
+from .serializers import CampaignSerializer,SMTPServerSerializer,UploadedFileSerializer
+from .models import   SMTPServer, UploadedFile,Campaign,ContactFile
 from django.shortcuts import  get_object_or_404
 from .forms import  SMTPServerForm
 from rest_framework.decorators import api_view, permission_classes
@@ -239,270 +239,6 @@ class FileUploadView(APIView):
 
 logger = logging.getLogger(__name__)
 
-class SendEmailsView(APIView):
-    DEFAULT_EMAIL_LIMIT = 10
-    
-    def get_html_content_from_s3(self, uploaded_file_key):
-        """Fetches HTML content from S3 based on the file key provided."""
-        try:
-            s3 = boto3.client(
-                's3',
-                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-                region_name=settings.AWS_S3_REGION_NAME
-            )
-            s3_object = s3.get_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=uploaded_file_key)
-            return s3_object['Body'].read().decode('utf-8')
-        except Exception as e:
-            logger.error(f"Error fetching file from S3: {str(e)}")
-            raise
-        
-    def validate_email_domain(self, email):
-        """Validate if the email domain has valid MX records."""
-        domain = email.split('@')[-1]
-        try:
-            dns.resolver.resolve(domain, 'MX')
-            return True
-        except dns.resolver.NoAnswer:
-            return False
-        except dns.resolver.NXDOMAIN:
-            return False
-        except Exception as e:
-            logger.error(f"DNS lookup failed for domain {domain}: {str(e)}")
-            return False
-
-    def post(self, request, *args, **kwargs):
-        user = request.user
-        profile, created = UserProfile.objects.get_or_create(user=user)
-        
-        can_send, message = profile.can_send_email()
-        if not can_send:
-            return Response({"message": message}, status=status.HTTP_400_BAD_REQUEST)
-           
-        if profile.plan_status == 'expired':
-            return Response({'error': 'Your Trial is expired. Please select a plan to continue.'}, status=status.HTTP_403_FORBIDDEN)
-        
-        email_limit = profile.current_plan.email_limit if profile.current_plan else self.DEFAULT_EMAIL_LIMIT
-        
-        if email_limit != 0 and profile.emails_sent >= email_limit:
-            if profile.current_plan is None:  
-                profile.plan_status = 'expired'
-                profile.save()
-                return Response(
-                    {'error': 'Trial limit exceeded. Please subscribe to a plan to continue.'},
-                    status=status.HTTP_403_FORBIDDEN
-                )
-            return Response(
-                {'error': 'Email limit exceeded. Please upgrade your plan to continue.'},
-                status=status.HTTP_403_FORBIDDEN
-            )
-           
-        serializer = EmailSendSerializer(data=request.data)
-        if serializer.is_valid():
-            campaign_name = serializer.validated_data['campaign_name']
-            csv_file_id = serializer.validated_data['csv_file_id']
-            smtp_server_ids = serializer.validated_data['smtp_server_ids']
-            delay_seconds = serializer.validated_data.get('delay_seconds', 0)
-            subject = serializer.validated_data.get('subject')
-            uploaded_file_key = serializer.validated_data['uploaded_file_key']
-            display_name = serializer.validated_data['display_name']
-            user_id = request.user.id
-
-            try:
-                file_content = self.get_html_content_from_s3(uploaded_file_key)
-            except Exception as e:
-                return Response({'error': f'Error fetching file from S3: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            
-            # Process email list from uploaded CSV file
-            email_list_file = request.FILES.get('email_list')
-            if not email_list_file:
-                return Response({'error': 'No email list file provided.'}, status=status.HTTP_400_BAD_REQUEST)
-
-            email_list = []
-            try:
-                csv_file = email_list_file.read().decode('utf-8')
-                csv_reader = csv.DictReader(StringIO(csv_file))
-                for row in csv_reader:
-                    email_list.append(row)
-            except Exception as e:
-                logger.error(f"Error processing email list: {str(e)}")
-                return Response({'error': 'Error processing the email list.'}, status=status.HTTP_400_BAD_REQUEST)
-
-
-            total_emails = len(email_list)
-            successful_sends = 0
-            failed_sends = 0
-            email_statuses = []
-            channel_layer = get_channel_layer()
-            smtp_servers = SMTPServer.objects.filter(id__in=smtp_server_ids)
-            num_smtp_servers = len(smtp_servers)
-   
-              
-            for i, recipient in enumerate(email_list):
-                if email_limit != 0 and profile.emails_sent >= email_limit:
-                    for remaining_recipient in email_list[i:]:
-                        failed_sends += 1
-                        status_message = 'Failed to send: Email limit exceeded'
-                        timestamp = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
-                        email_statuses.append({
-                            'email': remaining_recipient.get('Email'),
-                            'status': status_message,
-                            'timestamp': timestamp,
-                        })
-                        async_to_sync(channel_layer.group_send)(
-                        f'email_status_{user_id}',
-                        {
-                            'type': 'send_status_update',
-                            'email': remaining_recipient.get('Email'),
-                            'status': status_message,
-                            'timestamp': timestamp,
-                        })
-                    break
-                
-                recipient_email = recipient.get('Email')
-                
-                try:
-                    validated_email = validate_email(recipient_email).email
-                except EmailNotValidError as e:
-                    failed_sends += 1
-                    status_message = f'Failed to send: {str(e)}'
-                    timestamp = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
-                    email_statuses.append({
-                        'email': recipient_email,
-                        'status': status_message,
-                        'timestamp': timestamp,
-                    })
-                    
-                    async_to_sync(channel_layer.group_send)(
-                        f'email_status_{user_id}',
-                        {
-                            'type': 'send_status_update',
-                            'email': recipient_email,
-                            'status': status_message,
-                            'timestamp': timestamp,
-                        }
-                    )
-                    continue
-                
-                if not self.validate_email_domain(validated_email):
-                    failed_sends += 1
-                    status_message = 'Failed to send: Invalid domain'
-                    timestamp = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
-                    email_statuses.append({
-                        'email': validated_email,
-                        'status': status_message,
-                        'timestamp': timestamp,
-                    })
-                    async_to_sync(channel_layer.group_send)(
-                        f'email_status_{user_id}',
-                        {
-                            'type': 'send_status_update',
-                            'email': validated_email,
-                            'status': status_message,
-                            'timestamp': timestamp,
-                        }
-                    )
-                    continue
-                
-                context = {
-                    'firstName': recipient.get('firstName'),
-                    'lastName': recipient.get('lastName'),
-                    'companyName': recipient.get('companyName'),
-                    'display_name': display_name,
-                }
-                try:
-                    template = Template(file_content)
-                    context_data = Context(context)
-                    email_content = template.render(context_data)
-                except Exception as e:
-                    failed_sends += 1
-                    status_message = f'Failed to send: Error formatting email content - {str(e)}'
-                    timestamp = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
-                    email_statuses.append({
-                        'email': validated_email,
-                        'status': status_message,
-                        'timestamp': timestamp,
-                    })
-                    async_to_sync(channel_layer.group_send)(
-                        f'email_status_{user_id}',
-                        {
-                            'type': 'send_status_update',
-                            'email': validated_email,
-                            'status': status_message,
-                            'timestamp': timestamp,
-                        }
-                    )
-                    continue
-
-
-                smtp_server = smtp_servers[i % num_smtp_servers]
-                email = EmailMessage(
-                    subject=subject,
-                    body=email_content,
-                    from_email=f'{display_name} <{smtp_server.username}>',
-                    to=[recipient_email]
-                )
-                email.content_subtype = 'html'
-                
-                try:
-                    connection = get_connection(
-                        backend='django.core.mail.backends.smtp.EmailBackend',
-                        host=smtp_server.host,
-                        port=smtp_server.port,
-                        username=smtp_server.username,
-                        password=smtp_server.password,
-                        use_tls=smtp_server.use_tls,
-                    )
-                    email.connection = connection
-                    email.send()
-                    status_message = 'Sent successfully'
-                    successful_sends += 1
-                    profile.increment_email_count()
-                    profile.save()
-                except Exception as e:
-                    status_message = f'Failed to send: {str(e)}'
-                    failed_sends += 1
-                    logger.error(f"Error sending email to {recipient_email}: {str(e)}")
-
-                timestamp = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
-                email_statuses.append({
-                    'email': validated_email,
-                    'status': status_message,
-                    'timestamp': timestamp,
-                    'from_email': smtp_server.username,
-                    'smtp_server': smtp_server.host,
-                })
-                EmailStatusLog.objects.create(
-                    user=user,
-                    email=validated_email,
-                    status=status_message,
-                    from_email=smtp_server.username,
-                    smtp_server=smtp_server.host,
-                )
-                
-                async_to_sync(channel_layer.group_send)(
-                    f'email_status_{user_id}',
-                    {
-                        'type': 'send_status_update',
-                        'email': validated_email,
-                        'status': status_message,
-                        'timestamp': timestamp,
-                    }
-                )
-
-                if delay_seconds > 0:
-                    time.sleep(delay_seconds) 
-
-            return Response({
-                'status': 'All emails processed',
-                'total_emails': total_emails,
-                'successful_sends': successful_sends,
-                'failed_sends': failed_sends,
-                'email_statuses': email_statuses
-            }, status=status.HTTP_200_OK)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 from rest_framework.views import APIView
@@ -547,6 +283,419 @@ class ContactUploadView(APIView):
 
         return Response({'message': f'Contact CSV "{file_name}" uploaded and saved successfully.'}, status=status.HTTP_201_CREATED)
  
+ 
+ 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Campaign, ContactFile, SMTPServer
+from .serializers import CampaignSerializer,ContactSerializer
+
+# class CampaignView(APIView):
+#     def post(self, request, *args, **kwargs):
+#         serializer = CampaignSerializer(data=request.data)
+
+#         if serializer.is_valid():
+#             campaign_name = serializer.validated_data['campaign_name']
+#             contact_file_id = serializer.validated_data['contact_list']  # The uploaded contact file ID
+#             smtp_server_ids = serializer.validated_data['smtp_server_ids']
+#             delay_seconds = serializer.validated_data.get('delay_seconds', 0)
+#             subject = serializer.validated_data.get('subject')
+#             uploaded_file_key = serializer.validated_data['uploaded_file_key']
+#             display_name = serializer.validated_data['display_name']
+
+#             # Save the campaign in the database
+#             campaign = Campaign.objects.create(
+#                 name=campaign_name,
+#                 user=request.user,
+#                 subject=subject,
+#                 uploaded_file_key=uploaded_file_key,
+#                 display_name=display_name,
+#                 delay_seconds=delay_seconds,
+#                 contact_file_id=contact_file_id,
+#             )
+
+#             # Link the contact file to the campaign
+#             try:
+#                 contact_file = ContactFile.objects.get(id=contact_file_id)
+#                 campaign.contact_list = contact_file
+#                 campaign.save()
+#             except ContactFile.DoesNotExist:
+#                 return Response({'error': 'Contact file not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+#             # Save the selected SMTP servers in the campaign
+#             smtp_servers = SMTPServer.objects.filter(id__in=smtp_server_ids)
+#             campaign.smtp_servers.set(smtp_servers)  # Link the SMTP servers to the campaign
+
+#             return Response({
+#                 'status': 'Campaign saved successfully.',
+#                 'campaign_id': campaign.id,
+#                 'campaign_name': campaign_name
+#             }, status=status.HTTP_201_CREATED)
+
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+    
+class CampaignView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = CampaignSerializer(data=request.data, context={'request': request})
+        # serializer = CampaignSerializer(data=request.data)
+
+        if serializer.is_valid():
+            campaign_name = serializer.validated_data['campaign_name']
+            contact_file_id = serializer.validated_data['contact_list']  # The uploaded contact file ID
+            smtp_server_ids = serializer.validated_data['smtp_server_ids']
+            delay_seconds = serializer.validated_data.get('delay_seconds', 0)
+            subject = serializer.validated_data.get('subject')
+            uploaded_file_key = serializer.validated_data['uploaded_file_key']
+            display_name = serializer.validated_data['display_name']
+
+            # Validate the contact file
+            try:
+                contact_file = ContactFile.objects.get(id=contact_file_id)
+            except ContactFile.DoesNotExist:
+                return Response({'error': 'Contact file not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+            # Save the campaign in the database
+            campaign = Campaign.objects.create(
+                name=campaign_name,
+                user=request.user,
+                subject=subject,
+                uploaded_file_key=uploaded_file_key,
+                display_name=display_name,
+                delay_seconds=delay_seconds,
+                contact_list=contact_file,  # Assign the ContactFile instance
+            )
+
+            # Save the selected SMTP servers in the campaign
+            smtp_servers = SMTPServer.objects.filter(id__in=smtp_server_ids)
+            campaign.smtp_servers.set(smtp_servers)  # Link the SMTP servers to the campaign
+
+            # Retrieve contacts associated with the contact file
+            contacts = contact_file.contacts.all()
+            contact_serializer = ContactSerializer(contacts, many=True)
+
+            return Response({
+                'status': 'Campaign saved successfully.',
+                'campaign_id': campaign.id,
+                'campaign_name': campaign_name,
+                'contacts': contact_serializer.data,  # Include serialized contacts in the response
+            }, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+from .models import ContactFile
+class SendEmailsView(APIView):
+    DEFAULT_EMAIL_LIMIT = 10
+    
+    def get_html_content_from_s3(self, uploaded_file_key):
+        """Fetches HTML content from S3 based on the file key provided."""
+        try:
+            s3 = boto3.client(
+                's3',
+                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+                region_name=settings.AWS_S3_REGION_NAME
+            )
+            s3_object = s3.get_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=uploaded_file_key)
+            return s3_object['Body'].read().decode('utf-8')
+        except Exception as e:
+            logger.error(f"Error fetching file from S3: {str(e)}")
+            raise
+        
+    def validate_email_domain(self, email):
+        """Validate if the email domain has valid MX records."""
+        domain = email.split('@')[-1]
+        try:
+            dns.resolver.resolve(domain, 'MX')
+            return True
+        except dns.resolver.NoAnswer:
+            return False
+        except dns.resolver.NXDOMAIN:
+            return False
+        except Exception as e:
+            logger.error(f"DNS lookup failed for domain {domain}: {str(e)}")
+            return False
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        profile, created = UserProfile.objects.get_or_create(user=user)
+        campaign_id = request.data.get('campaign_id')
+        user_id = user.id
+
+        try:
+            # Fetch campaign and ensure it belongs to the user
+            campaign = Campaign.objects.get(id=campaign_id, user_id=user_id)
+        except Campaign.DoesNotExist:
+            return Response({'error': 'Campaign not found or unauthorized.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Fetch contact list for the campaign
+        try:
+            contact_file = ContactFile.objects.get(id=campaign.contact_list_id)
+            contacts = Contact.objects.filter(contact_file=contact_file)
+            contact_list = [contact.data for contact in contacts]
+        except ContactFile.DoesNotExist:
+            return Response({'error': 'Contact file not found for this campaign.'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': f'Error accessing contact list: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not contact_list:
+            return Response({'error': 'No contacts found for this campaign.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Fetch SMTP servers
+        smtp_server_ids = campaign.smtp_servers.values_list('id', flat=True)
+        smtp_servers = SMTPServer.objects.filter(id__in=smtp_server_ids)
+        if not smtp_servers.exists():
+            return Response({'error': 'No valid SMTP servers found for this campaign.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+        # Check user email limits and plan status
+        can_send, message = profile.can_send_email()
+        if not can_send:
+            return Response({"message": message}, status=status.HTTP_400_BAD_REQUEST)
+
+        if profile.plan_status == 'expired':
+            return Response({'error': 'Your plan has expired. Please subscribe a plan to continue.'}, status=status.HTTP_403_FORBIDDEN)
+
+        email_limit = profile.current_plan.email_limit if profile.current_plan else self.DEFAULT_EMAIL_LIMIT
+
+        if email_limit != 0 and profile.emails_sent >= email_limit:
+            if profile.current_plan is None:
+                profile.plan_status = 'expired'
+                profile.save()
+                return Response(
+                    {'error': 'Trial limit exceeded. Please subscribe to a plan to continue.'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            return Response(
+                {'error': 'Email limit exceeded. Please upgrade your plan to continue.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Retrieve campaign data
+        # contact_file = campaign.contact_list
+        smtp_server_ids = campaign.smtp_servers.values_list('id', flat=True)
+        uploaded_file_key = campaign.uploaded_file_key
+        display_name = campaign.display_name
+        delay_seconds = campaign.delay_seconds
+        subject = campaign.subject
+
+        # Retrieve the email template content
+        try:
+            file_content = self.get_html_content_from_s3(uploaded_file_key)
+        except Exception as e:
+            return Response({'error': f'Error fetching file from S3: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        # contact_list = []
+        # try:
+        #     if not campaign.contact_list:
+        #         return Response({'error': 'No contact list found for this campaign.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        #     with open(campaign.contact_list.path, 'r') as file:
+        #         csv_reader = csv.DictReader(file)
+        #         contact_list = [row for row in csv_reader]
+        # except FileNotFoundError:
+        #     logger.error("Contact list file not found.")
+        #     return Response({'error': 'Contact list file not found.'}, status=status.HTTP_404_NOT_FOUND)
+        # except Exception as e:
+        #     logger.error(f"Error processing contact list: {str(e)}")
+        #     return Response({'error': 'Error processing the contact list.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Parse contact file
+        # contact_list = []
+        # try:
+        #     contact_file_content = open(contact_file.file.path, 'r').read()
+        #     csv_reader = csv.DictReader(StringIO(contact_file_content))
+        #     contact_list = [row for row in csv_reader]
+        # except Exception as e:
+        #     logger.error(f"Error processing contact list: {str(e)}")
+        #     return Response({'error': 'Error processing the contact list.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # contact_list = []
+        # try:
+        #     with open(contact_file_path, 'r') as file:
+        #         csv_reader = csv.DictReader(file)
+        #         contact_list = [row for row in csv_reader]
+        # except FileNotFoundError:
+        #     return Response({'error': 'Contact list file not found.'}, status=status.HTTP_404_NOT_FOUND)
+        # except Exception as e:
+        #     return Response({'error': f'Error processing contact list: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
+
+        
+        total_contacts = len(contact_list)
+        successful_sends = 0
+        failed_sends = 0
+        email_statuses = []
+        channel_layer = get_channel_layer()
+        smtp_servers = SMTPServer.objects.filter(id__in=smtp_server_ids)
+        num_smtp_servers = len(smtp_servers)
+
+        for i, recipient in enumerate(contact_list):
+            if email_limit != 0 and profile.emails_sent >= email_limit:
+                for remaining_recipient in contact_list[i:]:
+                    failed_sends += 1
+                    status_message = 'Failed to send: Email limit exceeded'
+                    timestamp = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+                    email_statuses.append({
+                        'email': remaining_recipient.get('Email'),
+                        'status': status_message,
+                        'timestamp': timestamp,
+                    })
+                    async_to_sync(channel_layer.group_send)(
+                    f'email_status_{user_id}',
+                    {
+                        'type': 'send_status_update',
+                        'email': remaining_recipient.get('Email'),
+                        'status': status_message,
+                        'timestamp': timestamp,
+                    })
+                break
+            
+            recipient_email = recipient.get('Email')
+            
+            try:
+                validated_email = validate_email(recipient_email).email
+            except EmailNotValidError as e:
+                failed_sends += 1
+                status_message = f'Failed to send: {str(e)}'
+                timestamp = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+                email_statuses.append({
+                    'email': recipient_email,
+                    'status': status_message,
+                    'timestamp': timestamp,
+                })
+                
+                async_to_sync(channel_layer.group_send)(
+                    f'email_status_{user_id}',
+                    {
+                        'type': 'send_status_update',
+                        'email': recipient_email,
+                        'status': status_message,
+                        'timestamp': timestamp,
+                    }
+                )
+                continue
+            
+            if not self.validate_email_domain(validated_email):
+                failed_sends += 1
+                status_message = 'Failed to send: Invalid domain'
+                timestamp = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+                email_statuses.append({
+                    'email': validated_email,
+                    'status': status_message,
+                    'timestamp': timestamp,
+                })
+                async_to_sync(channel_layer.group_send)(
+                    f'email_status_{user_id}',
+                    {
+                        'type': 'send_status_update',
+                        'email': validated_email,
+                        'status': status_message,
+                        'timestamp': timestamp,
+                    }
+                )
+                continue
+            
+            context = {
+                'firstName': recipient.get('firstName'),
+                'lastName': recipient.get('lastName'),
+                'companyName': recipient.get('companyName'),
+                'display_name': display_name,
+            }
+            try:
+                template = Template(file_content)
+                context_data = Context(context)
+                email_content = template.render(context_data)
+            except Exception as e:
+                failed_sends += 1
+                status_message = f'Failed to send: Error formatting email content - {str(e)}'
+                timestamp = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+                email_statuses.append({
+                    'email': validated_email,
+                    'status': status_message,
+                    'timestamp': timestamp,
+                })
+                async_to_sync(channel_layer.group_send)(
+                    f'email_status_{user_id}',
+                    {
+                        'type': 'send_status_update',
+                        'email': validated_email,
+                        'status': status_message,
+                        'timestamp': timestamp,
+                    }
+                )
+                continue
+
+
+            smtp_server = smtp_servers[i % num_smtp_servers]
+            email = EmailMessage(
+                subject=subject,
+                body=email_content,
+                from_email=f'{display_name} <{smtp_server.username}>',
+                to=[recipient_email]
+            )
+            email.content_subtype = 'html'
+            
+            try:
+                connection = get_connection(
+                    backend='django.core.mail.backends.smtp.EmailBackend',
+                    host=smtp_server.host,
+                    port=smtp_server.port,
+                    username=smtp_server.username,
+                    password=smtp_server.password,
+                    use_tls=smtp_server.use_tls,
+                )
+                email.connection = connection
+                email.send()
+                status_message = 'Sent successfully'
+                successful_sends += 1
+                profile.increment_email_count()
+                profile.save()
+            except Exception as e:
+                status_message = f'Failed to send: {str(e)}'
+                failed_sends += 1
+                logger.error(f"Error sending email to {recipient_email}: {str(e)}")
+
+            timestamp = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+            email_statuses.append({
+                'email': validated_email,
+                'status': status_message,
+                'timestamp': timestamp,
+                'from_email': smtp_server.username,
+                'smtp_server': smtp_server.host,
+            })
+            EmailStatusLog.objects.create(
+                user=user,
+                email=validated_email,
+                status=status_message,
+                from_email=smtp_server.username,
+                smtp_server=smtp_server.host,
+            )
+            
+            async_to_sync(channel_layer.group_send)(
+                f'email_status_{user_id}',
+                {
+                    'type': 'send_status_update',
+                    'email': validated_email,
+                    'status': status_message,
+                    'timestamp': timestamp,
+                }
+            )
+
+            if delay_seconds > 0:
+                time.sleep(delay_seconds) 
+
+        return Response({
+            'status': 'All emails processed',
+            'total_emails': total_contacts,
+            'successful_sends': successful_sends,
+            'failed_sends': failed_sends,
+            'email_statuses': email_statuses
+        }, status=status.HTTP_200_OK)
+
+
+
 
 
 

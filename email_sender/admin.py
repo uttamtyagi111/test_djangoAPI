@@ -46,3 +46,12 @@ class ContactAdmin(admin.ModelAdmin):
     search_fields = ('data',)  # Enable search for the data field
     readonly_fields = ('data',)  # Make the data field read-only
 
+from django.contrib import admin
+from .models import Campaign
+
+@admin.register(Campaign)
+class CampaignAdmin(admin.ModelAdmin):
+    list_display = ('name', 'user', 'subject', 'uploaded_file_key', 'display_name', 'delay_seconds', 'created_at')
+    list_filter = ('created_at', 'user')
+    search_fields = ('name', 'subject', 'user__email')
+    ordering = ('-created_at',)

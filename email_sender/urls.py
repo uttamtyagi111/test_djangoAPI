@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import  SendEmailsView,UploadedFileList,UpdateUploadedFile,EmailStatusAnalyticsView
 from . import views
-from .views import UploadHTMLToS3,EmailStatusByDateRangeView,ContactUploadView
+from .views import UploadHTMLToS3,EmailStatusByDateRangeView,ContactUploadView,CampaignView
 
 router = DefaultRouter()
 
@@ -20,4 +20,5 @@ urlpatterns = [
     path('email-status-analytics/',EmailStatusAnalyticsView.as_view(), name='email-status-analytics'),
     path('date-range/', EmailStatusByDateRangeView.as_view(), name='date-range'),
     path('upload-contacts/', ContactUploadView.as_view(), name='upload-contacts'),
+    path('campaign/', CampaignView.as_view(), name='create_campaign'),
  ]
