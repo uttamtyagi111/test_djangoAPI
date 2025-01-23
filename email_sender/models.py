@@ -16,8 +16,8 @@ class EmailStatusLog(models.Model):
     email = models.EmailField()
     status = models.CharField(max_length=255)
     timestamp = models.DateTimeField(auto_now_add=True)
-    from_email = models.EmailField()
-    smtp_server = models.CharField(max_length=255)
+    from_email = models.EmailField(null=True, blank=True)
+    smtp_server = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return f"{self.email} - {self.status} - {self.timestamp}"

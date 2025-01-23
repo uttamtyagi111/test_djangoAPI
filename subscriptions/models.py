@@ -14,29 +14,41 @@ class Plan(models.Model):
     def __str__(self):
         return self.name
 
+def get_trial_expiration_date():
+    """Return the expiration date for a 14-day trial."""
+    return timezone.now() + timedelta(days=14)
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    plan_name = models.CharField(max_length=20, choices=[('Basic', 'Basic'), ('Premium', 'Premium')], null=True, blank=True)
+    plan_name = models.CharField(max_length=20, choices=[('Basic', 'basic'), ('Standard', 'standard'),('Premium', 'premium'),('Elite', 'elite')], null=True, blank=True)
     plan_status = models.CharField(max_length=20, default='inactive')
     emails_sent = models.IntegerField(default=0)
     razorpay_order_id = models.CharField(max_length=255, blank=True, null=True,unique=True)
     razorpay_payment_id = models.CharField(max_length=100, blank=True, null=True,unique=True)
-    plan_expiration_date = models.DateTimeField(default=timezone.now() + timedelta(days=30))
+    phonepe_transaction_id = models.CharField(max_length=255, null=True, blank=True)
+    payment_status = models.CharField(max_length=20, default="pending")  # Add payment status
+    plan_start_date = models.DateTimeField(null=True, blank=True)
+    plan_expiration_date = models.DateTimeField(default=get_trial_expiration_date,null=True, blank=True)
     current_plan = models.ForeignKey(Plan, on_delete=models.SET_NULL, null=True, blank=True)
+    pending_plan_id = models.IntegerField(null=True, blank=True)
     
-    DEFAULT_TRIAL_LIMIT = 10  
+    DEFAULT_TRIAL_LIMIT = 20  
 
     def can_send_email(self):
         """Check if the user can send an email based on their plan and email limit."""
 
-        if self.current_plan is None:
-            if self.emails_sent > self.DEFAULT_TRIAL_LIMIT:
+        if self.current_plan is None:  # Trial logic
+            if timezone.now() > self.plan_expiration_date:
+                self.plan_status = "expired"
+                self.save()
+                return False, "Trial period has expired. Please subscribe to a plan."
+            
+            if self.emails_sent >= self.DEFAULT_TRIAL_LIMIT:
                 self.plan_status = "expired"
                 self.save()
                 return False, "Trial limit exceeded. Please subscribe to a plan."
+            
             return True, "You are on a trial; you can send more emails."
-
         if self.plan_expiration_date <= timezone.now():
             self.plan_status = "expired"
             self.save()
@@ -58,8 +70,11 @@ class UserProfile(models.Model):
         self.current_plan = plan  
         self.plan_name = plan.name  
         self.plan_status = 'active' 
-        self.plan_expiration_date = timezone.now() + timedelta(days=plan.duration_days) 
-        self.emails_sent = 0 
+        self.plan_start_date = timezone.now()
+        self.plan_expiration_date = timezone.now() + timedelta(days=plan.duration_days)
+        self.payment_status = 'paid'  
+        self.emails_sent = 0
+        self.pending_plan_id = None 
         self.save() 
 
     def choose_plan_view(self, new_plan):

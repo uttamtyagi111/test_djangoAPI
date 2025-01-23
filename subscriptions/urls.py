@@ -12,4 +12,11 @@ urlpatterns = [
     path('upgrade-plan/', views.upgrade_plan, name='upgrade_plan'),
     path('create-order/', views.create_order, name='create_order'),
     path('payment-callback/', views.handle_payment_callback, name='handle_payment_callback'),
+    # path('phonepay/checkout', views.checkout, name='checkout'),
+    path("initiate-payment/", views.initiate_payment, name="initiate_payment"),
+    path("verify-payment/", views.verify_payment, name="verify_payment"),
+    path('payment-success/', views.payment_success, name='payment_success'),
+    path('payment-failed/', views.payment_failed, name='payment_failed'),
+    # path('payment/phonepe/create/', views.create_phonepe_order, name='create_phonepe_order'),
+    # path('payment/phonepe/callback/', views.handle_phonepe_payment_callback, name='handle_phonepe_payment_callback'),
 ]

@@ -290,61 +290,14 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Campaign, ContactFile, SMTPServer
 from .serializers import CampaignSerializer,ContactSerializer
-
-# class CampaignView(APIView):
-#     def post(self, request, *args, **kwargs):
-#         serializer = CampaignSerializer(data=request.data)
-
-#         if serializer.is_valid():
-#             campaign_name = serializer.validated_data['campaign_name']
-#             contact_file_id = serializer.validated_data['contact_list']  # The uploaded contact file ID
-#             smtp_server_ids = serializer.validated_data['smtp_server_ids']
-#             delay_seconds = serializer.validated_data.get('delay_seconds', 0)
-#             subject = serializer.validated_data.get('subject')
-#             uploaded_file_key = serializer.validated_data['uploaded_file_key']
-#             display_name = serializer.validated_data['display_name']
-
-#             # Save the campaign in the database
-#             campaign = Campaign.objects.create(
-#                 name=campaign_name,
-#                 user=request.user,
-#                 subject=subject,
-#                 uploaded_file_key=uploaded_file_key,
-#                 display_name=display_name,
-#                 delay_seconds=delay_seconds,
-#                 contact_file_id=contact_file_id,
-#             )
-
-#             # Link the contact file to the campaign
-#             try:
-#                 contact_file = ContactFile.objects.get(id=contact_file_id)
-#                 campaign.contact_list = contact_file
-#                 campaign.save()
-#             except ContactFile.DoesNotExist:
-#                 return Response({'error': 'Contact file not found.'}, status=status.HTTP_404_NOT_FOUND)
-
-#             # Save the selected SMTP servers in the campaign
-#             smtp_servers = SMTPServer.objects.filter(id__in=smtp_server_ids)
-#             campaign.smtp_servers.set(smtp_servers)  # Link the SMTP servers to the campaign
-
-#             return Response({
-#                 'status': 'Campaign saved successfully.',
-#                 'campaign_id': campaign.id,
-#                 'campaign_name': campaign_name
-#             }, status=status.HTTP_201_CREATED)
-
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    
     
 class CampaignView(APIView):
     def post(self, request, *args, **kwargs):
         serializer = CampaignSerializer(data=request.data, context={'request': request})
-        # serializer = CampaignSerializer(data=request.data)
 
         if serializer.is_valid():
             campaign_name = serializer.validated_data['campaign_name']
-            contact_file_id = serializer.validated_data['contact_list']  # The uploaded contact file ID
+            contact_file_id = serializer.validated_data['contact_list']  
             smtp_server_ids = serializer.validated_data['smtp_server_ids']
             delay_seconds = serializer.validated_data.get('delay_seconds', 0)
             subject = serializer.validated_data.get('subject')
@@ -367,12 +320,9 @@ class CampaignView(APIView):
                 delay_seconds=delay_seconds,
                 contact_list=contact_file,  # Assign the ContactFile instance
             )
-
-            # Save the selected SMTP servers in the campaign
             smtp_servers = SMTPServer.objects.filter(id__in=smtp_server_ids)
             campaign.smtp_servers.set(smtp_servers)  # Link the SMTP servers to the campaign
 
-            # Retrieve contacts associated with the contact file
             contacts = contact_file.contacts.all()
             contact_serializer = ContactSerializer(contacts, many=True)
 
@@ -382,12 +332,11 @@ class CampaignView(APIView):
                 'campaign_name': campaign_name,
                 'contacts': contact_serializer.data,  # Include serialized contacts in the response
             }, status=status.HTTP_201_CREATED)
-
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 from .models import ContactFile
 class SendEmailsView(APIView):
-    DEFAULT_EMAIL_LIMIT = 10
+    DEFAULT_EMAIL_LIMIT = 20
     
     def get_html_content_from_s3(self, uploaded_file_key):
         """Fetches HTML content from S3 based on the file key provided."""
