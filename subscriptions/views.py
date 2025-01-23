@@ -258,7 +258,7 @@ def initiate_payment(request):
         payload = {
             "merchantId": MERCHANT_ID,
             "merchantTransactionId": merchant_transaction_id,
-            "message": "Payment Iniiated",
+            "message": "Payment Initiated",
             "name": name,
             "amount": amount,
             "redirectUrl": f"http://localhost:8000/verify-payment/?id={merchant_transaction_id}",
