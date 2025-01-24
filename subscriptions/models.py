@@ -6,7 +6,7 @@ from datetime import timedelta
 
 class Plan(models.Model):
     name = models.CharField(max_length=100)
-    email_limit = models.IntegerField(default=10)
+    email_limit = models.IntegerField(default=20)
     device_limit = models.IntegerField(default=1)
     duration_days = models.IntegerField(default=30)  
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)

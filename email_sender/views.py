@@ -247,8 +247,10 @@ from rest_framework import status
 from .models import ContactFile, Contact
 import csv
 from io import StringIO
+from datetime import datetime
 
 class ContactUploadView(APIView):
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         user = request.user
 
@@ -264,6 +266,10 @@ class ContactUploadView(APIView):
         if not file_name:
             return Response({'error': 'File name is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Check for unique file name
+        if ContactFile.objects.filter(user=user, name=file_name).exists():
+            return Response({'error': f'A file with the name "{file_name}" already exists. Please use a different name.'}, status=status.HTTP_400_BAD_REQUEST)
+
         # Validate and parse the CSV file
         try:
             decoded_file = csv_file.read().decode('utf-8')
@@ -274,16 +280,129 @@ class ContactUploadView(APIView):
         except Exception as e:
             return Response({'error': f'Invalid CSV file format: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Create a new ContactFile object with the current timestamp
         contact_file = ContactFile.objects.create(user=user, name=file_name)
 
         contacts = []
+        row_count = 0  # Counter for valid rows
         for row in reader:
-            contacts.append(Contact(contact_file=contact_file, data=row))
+            if any(row.values()):  # Ensure the row has data
+                contacts.append(Contact(contact_file=contact_file, data=row))
+                row_count += 1  # Increment only for valid rows
         Contact.objects.bulk_create(contacts)
 
-        return Response({'message': f'Contact CSV "{file_name}" uploaded and saved successfully.'}, status=status.HTTP_201_CREATED)
- 
- 
+        return Response({
+            'message': 'Contacts uploaded and saved successfully.',
+            'file_name': file_name,
+            'total_contacts': row_count,  # Number of valid rows excluding the header
+            'created_at': contact_file.uploaded_at.strftime('%Y-%m-%d %H:%M:%S')  # Format the creation date
+        }, status=status.HTTP_201_CREATED)
+
+
+
+class ContactListView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        user = request.user
+        file_id = request.query_params.get('file_id')  # Get file_id from query parameters
+
+        if not file_id:
+            return Response({'error': 'file_id is required to fetch contacts.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            contact_file = ContactFile.objects.get(id=file_id, user=user)
+        except ContactFile.DoesNotExist:
+            return Response({'error': 'Contact file not found or you do not have permission to access it.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Fetch all contacts for the given file
+        contacts = Contact.objects.filter(contact_file=contact_file).values('data')
+        return Response({
+            'file_name': contact_file.name,
+            'contacts': list(contacts)
+        }, status=status.HTTP_200_OK)
+
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Contact, ContactFile
+import csv
+from io import StringIO
+
+class ContactFileUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, file_id):
+        """
+        Update an existing contact file with a new CSV.
+        This allows the user to edit and add new rows with new fields.
+        """
+        user = request.user
+
+        try:
+            # Ensure the file belongs to the user
+            contact_file = ContactFile.objects.get(id=file_id, user=user)
+        except ContactFile.DoesNotExist:
+            return Response({'error': 'Contact file not found or you do not have permission to update it.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Get the updated contacts from the request
+        contacts_data = request.data.get('contacts')
+        if not contacts_data:
+            return Response({'error': 'No contacts data provided.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        updated_contacts = []  # List to hold updated contacts
+        row_count = 0  # Counter for valid rows
+        new_rows_count = 0  # Counter for new rows
+
+        for row in contacts_data:
+            contact_id = row.get("id")  # Assuming each contact has an 'id'
+            if contact_id:  # Update existing contact
+                try:
+                    contact = Contact.objects.get(id=contact_id, contact_file=contact_file)
+                    contact.data.update(row.get("data", {}))  # Update the contact fields
+                    contact.save()
+                    updated_contacts.append(contact)
+                    row_count += 1
+                except Contact.DoesNotExist:
+                    continue
+            else:  # Add new row if id is not found
+                new_row = row.get("data", {})
+                if new_row:
+                    contact = Contact(contact_file=contact_file, data=new_row)
+                    contact.save()
+                    updated_contacts.append(contact)
+                    new_rows_count += 1
+
+        return Response({
+            'message': 'Contacts updated and new rows added successfully.',
+            'file_name': contact_file.name,
+            'total_contacts_updated': row_count,
+            'total_new_rows': new_rows_count,  # Number of new rows added
+            'created_at': contact_file.uploaded_at.strftime('%Y-%m-%d %H:%M:%S')
+        }, status=status.HTTP_200_OK)
+
+
+
+class ContactFileDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+    def delete(self, request, file_id):
+        """
+        Delete a contact file and all its associated contacts.
+        """
+        user = request.user
+
+        try:
+            # Ensure the file belongs to the user
+            contact_file = ContactFile.objects.get(id=file_id, user=user)
+        except ContactFile.DoesNotExist:
+            return Response({'error': 'Contact file not found or you do not have permission to delete it.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Delete the contact file and all its associated contacts
+        contact_file.delete()
+
+        return Response({'message': f'Contact file "{contact_file.name}" and its associated contacts have been deleted.'}, status=status.HTTP_200_OK)
+
  
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -292,6 +411,7 @@ from .models import Campaign, ContactFile, SMTPServer
 from .serializers import CampaignSerializer,ContactSerializer
     
 class CampaignView(APIView):
+    permission_classes = [IsAuthenticated]
     def post(self, request, *args, **kwargs):
         serializer = CampaignSerializer(data=request.data, context={'request': request})
 
@@ -672,7 +792,7 @@ class EmailStatusAnalyticsView(APIView):
 
 class EmailStatusByDateRangeView(APIView):
     permission_classes = [IsAuthenticated]
-
+    
     class DateRangeSerializer(serializers.Serializer):
         start_date = serializers.DateField(required=True)
         end_date = serializers.DateField(required=True)
