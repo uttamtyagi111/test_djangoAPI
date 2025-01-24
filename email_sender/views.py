@@ -12,7 +12,7 @@ from django.core.files.base import ContentFile
 from .models import EmailStatusLog 
 from subscriptions.models import UserProfile, Plan
 from .serializers import EmailStatusLogSerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework.views import APIView
 from rest_framework import status,viewsets
 from django.core.mail import EmailMessage, get_connection
@@ -384,24 +384,44 @@ class ContactFileUpdateView(APIView):
 
 
 
-class ContactFileDeleteView(APIView):
-    permission_classes = [IsAuthenticated]
-    def delete(self, request, file_id):
-        """
-        Delete a contact file and all its associated contacts.
-        """
-        user = request.user
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import status
+from django.contrib.auth.models import User
+from .models import Contact, Unsubscribed, ContactFile
 
+class ContactUnsubscribeView(APIView):
+    def delete(self, request, contact_file_id, contact_id):
         try:
-            # Ensure the file belongs to the user
-            contact_file = ContactFile.objects.get(id=file_id, user=user)
+            # Fetch the contact and contact file
+            contact = Contact.objects.get(id=contact_id, contact_file_id=contact_file_id)
+            contact_file = ContactFile.objects.get(id=contact_file_id)
+
+            # Find the user who uploaded the contact file
+            user = contact_file.user  # This assumes the ContactFile has a 'user' field.
+
+            # Add the unsubscription event to the Unsubscribed table
+            unsubscribed_entry = Unsubscribed.objects.create(
+                contact=contact,
+                contact_file=contact_file
+            )
+
+            # Perform the unsubscription logic (this part may depend on your business logic)
+            contact.delete()  # Your unsubscribe logic
+
+            # Return a response
+            return Response({
+                "message": "Unsubscribed successfully",
+                "email": contact.data["email"],  # Assuming 'email' is stored in 'data'
+                "unsubscribed_at": unsubscribed_entry.unsubscribed_at,
+                "contact_file": contact_file.name,  # Name of the contact list from which the contact unsubscribed
+                "user": user.username  # Show the username of the person who uploaded the file
+            }, status=status.HTTP_204_NO_CONTENT)
+        except Contact.DoesNotExist:
+            return Response({"error": "Contact not found"}, status=status.HTTP_404_NOT_FOUND)
         except ContactFile.DoesNotExist:
-            return Response({'error': 'Contact file not found or you do not have permission to delete it.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "Contact file not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        # Delete the contact file and all its associated contacts
-        contact_file.delete()
-
-        return Response({'message': f'Contact file "{contact_file.name}" and its associated contacts have been deleted.'}, status=status.HTTP_200_OK)
 
  
 from rest_framework.views import APIView
@@ -453,8 +473,8 @@ class CampaignView(APIView):
                 'contacts': contact_serializer.data,  # Include serialized contacts in the response
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-from .models import ContactFile
+
+
 class SendEmailsView(APIView):
     DEFAULT_EMAIL_LIMIT = 20
     
@@ -556,41 +576,6 @@ class SendEmailsView(APIView):
         except Exception as e:
             return Response({'error': f'Error fetching file from S3: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # contact_list = []
-        # try:
-        #     if not campaign.contact_list:
-        #         return Response({'error': 'No contact list found for this campaign.'}, status=status.HTTP_400_BAD_REQUEST)
-            
-        #     with open(campaign.contact_list.path, 'r') as file:
-        #         csv_reader = csv.DictReader(file)
-        #         contact_list = [row for row in csv_reader]
-        # except FileNotFoundError:
-        #     logger.error("Contact list file not found.")
-        #     return Response({'error': 'Contact list file not found.'}, status=status.HTTP_404_NOT_FOUND)
-        # except Exception as e:
-        #     logger.error(f"Error processing contact list: {str(e)}")
-        #     return Response({'error': 'Error processing the contact list.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Parse contact file
-        # contact_list = []
-        # try:
-        #     contact_file_content = open(contact_file.file.path, 'r').read()
-        #     csv_reader = csv.DictReader(StringIO(contact_file_content))
-        #     contact_list = [row for row in csv_reader]
-        # except Exception as e:
-        #     logger.error(f"Error processing contact list: {str(e)}")
-        #     return Response({'error': 'Error processing the contact list.'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # contact_list = []
-        # try:
-        #     with open(contact_file_path, 'r') as file:
-        #         csv_reader = csv.DictReader(file)
-        #         contact_list = [row for row in csv_reader]
-        # except FileNotFoundError:
-        #     return Response({'error': 'Contact list file not found.'}, status=status.HTTP_404_NOT_FOUND)
-        # except Exception as e:
-        #     return Response({'error': f'Error processing contact list: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
-
         
         total_contacts = len(contact_list)
         successful_sends = 0
@@ -665,12 +650,23 @@ class SendEmailsView(APIView):
                     }
                 )
                 continue
+            contact = Contact.objects.filter(contact_file=contact_file, data__Email=recipient_email).first()
+
+
+            if contact:
+                 contact_id = contact.id  # Get the ID of the matching contact
+            else:
+                contact_id = None  # No contact found for this email
+            file_id = contact_file.id
             
+            unsubscribe_url = f"{request.scheme}://{request.get_host()}/contact-files/{file_id}/unsubscribe/{contact_id}/"
+
             context = {
                 'firstName': recipient.get('firstName'),
                 'lastName': recipient.get('lastName'),
                 'companyName': recipient.get('companyName'),
                 'display_name': display_name,
+                'unsubscribe_url': unsubscribe_url,
             }
             try:
                 template = Template(file_content)

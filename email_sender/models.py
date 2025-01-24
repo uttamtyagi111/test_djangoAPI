@@ -67,3 +67,16 @@ class Campaign(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.user.username})"
+
+
+from django.db import models
+from django.contrib.auth.models import User
+from django.utils import timezone
+
+class Unsubscribed(models.Model):
+    contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
+    contact_file = models.ForeignKey('ContactFile', on_delete=models.SET_NULL, null=True, blank=True)
+    unsubscribed_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.contact.data['email']} unsubscribed from {self.contact_file.name} at {self.unsubscribed_at}"

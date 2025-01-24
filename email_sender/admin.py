@@ -39,12 +39,38 @@ class ContactFileAdmin(admin.ModelAdmin):
     search_fields = ('name', 'user__username')  # Search functionality
     inlines = [ContactInline]  # Display associated contacts inline
 
+from django.contrib import admin
+from django import forms
+from .models import Contact
+
+class ContactAdminForm(forms.ModelForm):
+    class Meta:
+        model = Contact
+        fields = '__all__'
+    
+    # If `data` is a JSONField, you can create a custom widget for better editing
+    data = forms.JSONField(widget=forms.Textarea(attrs={'rows': 4, 'cols': 50}))
+
 @admin.register(Contact)
 class ContactAdmin(admin.ModelAdmin):
-    list_display = ('contact_file', 'data')  # Fields to display in the list view
+    form = ContactAdminForm
+    list_display = ('contact_file', 'data')  # Display contact file and email in the list
     list_filter = ('contact_file',)  # Filter by contact file
-    search_fields = ('data',)  # Enable search for the data field
-    readonly_fields = ('data',)  # Make the data field read-only
+    search_fields = ('contact_file__name',)  # Search by contact file name and email inside data
+    readonly_fields = ()  # Make the data field editable
+    actions = ['make_unsubscribed']
+
+    # Optionally, create a custom function to extract and display email from data
+    def email(self, obj):
+        return obj.data.get('email', 'N/A')
+    email.short_description = 'Email'
+
+    # Optional action for unsubscribing contacts
+    def make_unsubscribed(self, request, queryset):
+        # Logic for unsubscribing the contacts (You can implement this based on your requirements)
+        pass
+    make_unsubscribed.short_description = 'Mark selected contacts as unsubscribed'
+ # Make the data field read-only
 
 from django.contrib import admin
 from .models import Campaign
@@ -55,3 +81,15 @@ class CampaignAdmin(admin.ModelAdmin):
     list_filter = ('created_at', 'user')
     search_fields = ('name', 'subject', 'user__email')
     ordering = ('-created_at',)
+
+
+from django.contrib import admin
+from .models import Unsubscribed
+
+class UnsubscribedAdmin(admin.ModelAdmin):
+    list_display = ('contact', 'contact_file', 'unsubscribed_at')
+    list_filter = ('unsubscribed_at', 'contact_file')  # You can filter by the contact file and unsubscription date
+    search_fields = ('contact__data__email', 'contact_file__name')  # Search by email and contact file name
+    ordering = ('-unsubscribed_at',)  # Order by the latest unsubscribed time
+
+admin.site.register(Unsubscribed, UnsubscribedAdmin)
