@@ -20,7 +20,7 @@ def get_trial_expiration_date():
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    plan_name = models.CharField(max_length=20, choices=[('Basic', 'basic'), ('Standard', 'standard'),('Premium', 'premium'),('Elite', 'elite')], null=True, blank=True)
+    plan_name = models.CharField(max_length=20, choices=[('Basic', 'Basic'), ('Standard', 'Standard'),('Premium', 'Premium'),('Elite', 'Elite')], null=True, blank=True)
     plan_status = models.CharField(max_length=20, default='inactive')
     emails_sent = models.IntegerField(default=0)
     razorpay_order_id = models.CharField(max_length=255, blank=True, null=True,unique=True)
@@ -31,6 +31,13 @@ class UserProfile(models.Model):
     plan_expiration_date = models.DateTimeField(default=get_trial_expiration_date,null=True, blank=True)
     current_plan = models.ForeignKey(Plan, on_delete=models.SET_NULL, null=True, blank=True)
     pending_plan_id = models.IntegerField(null=True, blank=True)
+    
+    # def save(self, *args, **kwargs):
+    #     # If plan is not None, make sure the plan name is uppercase
+    #     if self.plan:
+    #         self.plan.name = self.plan.name.upper()
+        
+    #     super(UserProfile, self).save(*args, **kwargs)  
     
     DEFAULT_TRIAL_LIMIT = 20  
 

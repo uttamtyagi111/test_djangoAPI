@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plan Purchase Invoice</title>
+  <style>
+    /* Reset & Base Styles */
+    body, table, td {
+      margin: 0;
+      padding: 0;
+      text-size-adjust: 100%;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      color: #333333;
+    }
+    table {
+      border-spacing: 0;
+      width: 100%;
+      max-width: 600px;
+      margin: 20px auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+    }
+    img {
+      border: 0;
+      height: auto;
+      display: block;
+    }
+    .header {
+      background-color: #3b82f6;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .footer {
+      background-color: #f3f4f6;
+      padding: 15px;
+      text-align: center;
+      font-size: 12px;
+      color: #777777;
+      border-top: 1px solid #ddd;
+    }
+    .invoice-title {
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+    .details-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .details-table th {
+      background-color: #eff6ff;
+      font-size: 16px;
+      font-weight: bold;
+      color: #333333;
+    }
+    .details-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .details-table tr:nth-child(odd) {
+      background-color: #ffffff;
+    }
+    .price {
+      font-size: 18px;
+      font-weight: bold;
+      color: #3b82f6;
+    }
+  </style>
+</head>
+<body>
+
+  <table role="presentation">
+    <!-- Header Section -->
+    <tr>
+      <td class="header">
+        <img src="https://wishgeekstechserve.s3.ap-southeast-2.amazonaws.com/wishgeeksLogo.png" alt="Company Logo" style="max-width: 150px; margin-bottom: 10px;">
+        Plan Purchase Invoice
+      </td>
+    </tr>
+
+    <!-- Invoice Title -->
+    <tr>
+      <td>
+        <p class="invoice-title">Thank You for Your Purchase!</p>
+      </td>
+    </tr>
+
+    <!-- Invoice Details -->
+    <tr>
+      <td>
+        <table class="details-table" role="presentation">
+          <tr>
+            <th>Plan Name</th>
+            <td>{{ plan_name }}</td>
+          </tr>
+          <tr>
+            <th>Transaction ID</th>
+            <td>{{ transactionId }}</td>
+          </tr>
+          <tr>
+            <th>Price</th>
+            <td class="price">${{ price }}</td>
+          </tr>
+          <tr>
+            <th>Duration</th>
+            <td>{{ expiry_date }} days</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <!-- Footer Section -->
+    <tr>
+      <td class="footer">
+        This is a system-generated invoice. For any questions, contact us at <a href="mailto:support@yourcompany.com" style="color: #3b82f6; text-decoration: none;">support@yourcompany.com</a>.
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

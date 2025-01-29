@@ -9,5 +9,5 @@ from .models import UserProfile
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         profile = UserProfile.objects.create(user=instance)
-        profile.plan_expiration_date = instance.date_joined + timedelta(days=30)
+        profile.plan_expiration_date = instance.date_joined + timedelta(days=14)
         profile.save()

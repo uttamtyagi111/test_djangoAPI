@@ -1,4 +1,8 @@
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Contact, Unsubscribed, ContactFile
 from rest_framework import serializers
+from .serializers import CampaignSerializer,ContactSerializer
 from datetime import timedelta
 from django.utils import timezone
 from .models import EmailStatusLog  
@@ -16,7 +20,6 @@ from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework.views import APIView
 from rest_framework import status,viewsets
 from django.core.mail import EmailMessage, get_connection
-from django.utils import timezone
 from io import StringIO
 from django.template import Template, Context
 import csv,time,logging,os,boto3,time,uuid
@@ -241,13 +244,7 @@ logger = logging.getLogger(__name__)
 
 
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from .models import ContactFile, Contact
-import csv
-from io import StringIO
-from datetime import datetime
+
 
 class ContactUploadView(APIView):
     permission_classes = [IsAuthenticated]
@@ -256,7 +253,7 @@ class ContactUploadView(APIView):
 
         # Check if the user has reached the upload limit
         if ContactFile.objects.filter(user=user).count() >= 10:
-            return Response({'error': 'You have reached the maximum limit of 10 contact uploads.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "You have already uploaded 10 contact lists. To upload a new list, please delete an existing one."}, status=status.HTTP_400_BAD_REQUEST)
 
         csv_file = request.FILES.get('csv_file')
         file_name = request.data.get('name')
@@ -323,12 +320,7 @@ class ContactListView(APIView):
 
 
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from .models import Contact, ContactFile
-import csv
-from io import StringIO
+
 
 class ContactFileUpdateView(APIView):
     permission_classes = [IsAuthenticated]
@@ -384,57 +376,157 @@ class ContactFileUpdateView(APIView):
 
 
 
+
+# class ContactUnsubscribeView(APIView):
+#     permission_classes = [AllowAny]
+#     def delete(self, request, contact_file_id, contact_id):
+#         try:
+#             # Fetch the contact and contact file
+#             contact = Contact.objects.get(id=contact_id, contact_file_id=contact_file_id)
+#             contact_file = ContactFile.objects.get(id=contact_file_id)
+
+#             # Find the user who uploaded the contact file
+#             user = contact_file.user  # This assumes the ContactFile has a 'user' field.
+
+#             # Add the unsubscription event to the Unsubscribed table
+#             unsubscribed_entry = Unsubscribed.objects.create(
+#                 contact=contact,
+#                 contact_file=contact_file,
+#                 email=contact.data.get("Email")
+#             )
+#             print(unsubscribed_entry)
+#             # Perform the unsubscription logic (this part may depend on your business logic)
+#             contact.delete()  # Your unsubscribe logic
+
+#             # Return a response
+#             return Response({
+#                 "message": "Unsubscribed successfully",
+#                 "email": contact.data["Email"],  # Assuming 'email' is stored in 'data'
+#                 "unsubscribed_at": unsubscribed_entry.unsubscribed_at,
+#                 "contact_file": contact_file.name,  # Name of the contact list from which the contact unsubscribed
+#                 "user": user.username  # Show the username of the person who uploaded the file
+#             }, status=status.HTTP_204_NO_CONTENT)
+#         except Contact.DoesNotExist:
+#             return Response({"error": "Contact not found"}, status=status.HTTP_404_NOT_FOUND)
+#         except ContactFile.DoesNotExist:
+#             return Response({"error": "Contact file not found"}, status=status.HTTP_404_NOT_FOUND)
+
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-from django.contrib.auth.models import User
-from .models import Contact, Unsubscribed, ContactFile
-
+from email_sender.models import Contact, ContactFile, Unsubscribed
 class ContactUnsubscribeView(APIView):
+    permission_classes = [AllowAny]
+
     def delete(self, request, contact_file_id, contact_id):
         try:
             # Fetch the contact and contact file
             contact = Contact.objects.get(id=contact_id, contact_file_id=contact_file_id)
             contact_file = ContactFile.objects.get(id=contact_file_id)
 
-            # Find the user who uploaded the contact file
-            user = contact_file.user  # This assumes the ContactFile has a 'user' field.
-
             # Add the unsubscription event to the Unsubscribed table
             unsubscribed_entry = Unsubscribed.objects.create(
-                contact=contact,
-                contact_file=contact_file
+                email=contact.data.get("Email"),  # Extract email directly
+                contact_file_name=contact_file.name  # Store contact file name directly
             )
+            contact.delete()
 
-            # Perform the unsubscription logic (this part may depend on your business logic)
-            contact.delete()  # Your unsubscribe logic
+            # Check if unsubscribed entry was created successfully
+            if unsubscribed_entry:
+                # Now delete the contact from the Contact table
 
-            # Return a response
-            return Response({
-                "message": "Unsubscribed successfully",
-                "email": contact.data["email"],  # Assuming 'email' is stored in 'data'
-                "unsubscribed_at": unsubscribed_entry.unsubscribed_at,
-                "contact_file": contact_file.name,  # Name of the contact list from which the contact unsubscribed
-                "user": user.username  # Show the username of the person who uploaded the file
-            }, status=status.HTTP_204_NO_CONTENT)
+                return Response({
+                    "message": "Unsubscribed successfully",
+                    "email": unsubscribed_entry.email,
+                    "contact_file": contact_file.name
+                }, status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({"error": "Failed to unsubscribe"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         except Contact.DoesNotExist:
             return Response({"error": "Contact not found"}, status=status.HTTP_404_NOT_FOUND)
         except ContactFile.DoesNotExist:
             return Response({"error": "Contact file not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
- 
+
+
+    
+# class CampaignView(APIView):
+#     permission_classes = [IsAuthenticated]
+#     def post(self, request, *args, **kwargs):
+#         serializer = CampaignSerializer(data=request.data, context={'request': request})
+
+#         if serializer.is_valid():
+#             campaign_name = serializer.validated_data['campaign_name']
+#             contact_file_id = serializer.validated_data['contact_list']  
+#             smtp_server_ids = serializer.validated_data['smtp_server_ids']
+#             delay_seconds = serializer.validated_data.get('delay_seconds', 0)
+#             subject = serializer.validated_data.get('subject')
+#             uploaded_file_key = serializer.validated_data['uploaded_file_key']
+#             display_name = serializer.validated_data['display_name']
+
+#             # Validate the contact file
+#             try:
+#                 contact_file = ContactFile.objects.get(id=contact_file_id)
+#             except ContactFile.DoesNotExist:
+#                 return Response({'error': 'Contact file not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+#             # Save the campaign in the database
+#             campaign = Campaign.objects.create(
+#                 name=campaign_name,
+#                 user=request.user,
+#                 subject=subject,
+#                 uploaded_file_key=uploaded_file_key,
+#                 display_name=display_name,
+#                 delay_seconds=delay_seconds,
+#                 contact_list=contact_file,  # Assign the ContactFile instance
+#             )
+#             smtp_servers = SMTPServer.objects.filter(id__in=smtp_server_ids)
+#             campaign.smtp_servers.set(smtp_servers)  # Link the SMTP servers to the campaign
+
+#             contacts = contact_file.contacts.all()
+#             contact_serializer = ContactSerializer(contacts, many=True)
+
+#             return Response({
+#                 'status': 'Campaign saved successfully.',
+#                 'campaign_id': campaign.id,
+#                 'campaign_name': campaign_name,
+#                 'contacts': contact_serializer.data,  # Include serialized contacts in the response
+#             }, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from .models import Campaign, ContactFile, SMTPServer
-from .serializers import CampaignSerializer,ContactSerializer
-    
+from .serializers import CampaignSerializer, ContactSerializer
+
 class CampaignView(APIView):
     permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        campaign_id = kwargs.get('id')
+        if campaign_id:
+            try:
+                campaign = Campaign.objects.get(id=campaign_id, user=request.user)
+                serializer = CampaignSerializer(campaign)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except Campaign.DoesNotExist:
+                return Response({'error': 'Campaign not found.'}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            campaigns = Campaign.objects.filter(user=request.user)
+            serializer = CampaignSerializer(campaigns, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+
     def post(self, request, *args, **kwargs):
         serializer = CampaignSerializer(data=request.data, context={'request': request})
-
         if serializer.is_valid():
             campaign_name = serializer.validated_data['campaign_name']
             contact_file_id = serializer.validated_data['contact_list']  
@@ -458,7 +550,7 @@ class CampaignView(APIView):
                 uploaded_file_key=uploaded_file_key,
                 display_name=display_name,
                 delay_seconds=delay_seconds,
-                contact_list=contact_file,  # Assign the ContactFile instance
+                contact_list=contact_file,
             )
             smtp_servers = SMTPServer.objects.filter(id__in=smtp_server_ids)
             campaign.smtp_servers.set(smtp_servers)  # Link the SMTP servers to the campaign
@@ -470,9 +562,38 @@ class CampaignView(APIView):
                 'status': 'Campaign saved successfully.',
                 'campaign_id': campaign.id,
                 'campaign_name': campaign_name,
-                'contacts': contact_serializer.data,  # Include serialized contacts in the response
+                'contacts': contact_serializer.data,
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, *args, **kwargs):
+        campaign_id = kwargs.get('id')
+        if not campaign_id:
+            return Response({'error': 'Campaign ID is required for updating.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            campaign = Campaign.objects.get(id=campaign_id, user=request.user)
+        except Campaign.DoesNotExist:
+            return Response({'error': 'Campaign not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = CampaignSerializer(campaign, data=request.data, partial=True, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'status': 'Campaign updated successfully.'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, *args, **kwargs):
+        campaign_id = kwargs.get('id')
+        if not campaign_id:
+            return Response({'error': 'Campaign ID is required for deletion.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            campaign = Campaign.objects.get(id=campaign_id, user=request.user)
+            campaign.delete()
+            return Response({'status': 'Campaign deleted successfully.'}, status=status.HTTP_200_OK)
+        except Campaign.DoesNotExist:
+            return Response({'error': 'Campaign not found.'}, status=status.HTTP_404_NOT_FOUND)
+
 
 
 class SendEmailsView(APIView):

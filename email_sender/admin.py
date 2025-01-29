@@ -1,5 +1,6 @@
+from django import forms
 from django.contrib import admin
-from .models import  SMTPServer,UploadedFile,EmailStatusLog
+from .models import  SMTPServer,UploadedFile,EmailStatusLog,Contact,ContactFile,Campaign,Unsubscribed
 
 @admin.register(UploadedFile)
 class UploadedFileAdmin(admin.ModelAdmin):
@@ -23,9 +24,6 @@ class EmailStatusLogAdmin(admin.ModelAdmin):
     user.short_description = 'User' 
     
     
-from django.contrib import admin
-from .models import ContactFile, Contact
-
 class ContactInline(admin.TabularInline):
     model = Contact
     extra = 0  # No extra empty rows by default
@@ -39,9 +37,6 @@ class ContactFileAdmin(admin.ModelAdmin):
     search_fields = ('name', 'user__username')  # Search functionality
     inlines = [ContactInline]  # Display associated contacts inline
 
-from django.contrib import admin
-from django import forms
-from .models import Contact
 
 class ContactAdminForm(forms.ModelForm):
     class Meta:
@@ -72,8 +67,6 @@ class ContactAdmin(admin.ModelAdmin):
     make_unsubscribed.short_description = 'Mark selected contacts as unsubscribed'
  # Make the data field read-only
 
-from django.contrib import admin
-from .models import Campaign
 
 @admin.register(Campaign)
 class CampaignAdmin(admin.ModelAdmin):
@@ -83,13 +76,9 @@ class CampaignAdmin(admin.ModelAdmin):
     ordering = ('-created_at',)
 
 
-from django.contrib import admin
-from .models import Unsubscribed
-
+@admin.register(Unsubscribed)
 class UnsubscribedAdmin(admin.ModelAdmin):
-    list_display = ('contact', 'contact_file', 'unsubscribed_at')
-    list_filter = ('unsubscribed_at', 'contact_file')  # You can filter by the contact file and unsubscription date
-    search_fields = ('contact__data__email', 'contact_file__name')  # Search by email and contact file name
-    ordering = ('-unsubscribed_at',)  # Order by the latest unsubscribed time
+    list_display = ('email', 'contact_file_name', 'unsubscribed_at')  # Update fields here
+    list_filter = ('contact_file_name', 'unsubscribed_at')  # Update fields here
+    search_fields = ('email', 'contact_file_name')  # Allow searching by these fields
 
-admin.site.register(Unsubscribed, UnsubscribedAdmin)

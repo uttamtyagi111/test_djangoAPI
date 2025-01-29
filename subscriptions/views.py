@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from django.utils import timezone
+from .utils import send_email_with_pdf
 from django.conf import settings
 from datetime import timedelta
 import razorpay
@@ -32,7 +33,7 @@ def get_user_profile(request):
             'username': request.user.username,
             'email_count': user_profile.emails_sent,
             'plan_name': user_profile.plan_name,
-            'plan_status': user_profile.plan_status,
+            'plan_status': plan_status,
             'plan_start_date' : user_profile.plan_start_date,
             'plan_expiry_date': user_profile.plan_expiration_date
             
@@ -58,7 +59,7 @@ def choose_plan_view(request):
     plan_name = request.data.get('plan_name')
     
     if plan_name not in ['basic','standard', 'premium','elite']:
-        return Response({'message': 'Invalid plan selected. Choose either "basic" or "premium".'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'message': 'Invalid plan selected. Choose either "basic" or "standard"or "premium"or "elite".'}, status=status.HTTP_400_BAD_REQUEST)
     
     try:
 
@@ -88,8 +89,8 @@ def upgrade_plan(request):
     """
     plan_name = request.data.get('plan_name')
     
-    if plan_name not in ['basic', 'standard','premium','elite']:
-        return Response({'message': 'Invalid plan selected. Choose either "basic" or "premium".'}, status=status.HTTP_400_BAD_REQUEST)
+    if plan_name not in ['Basic', 'Standard','Premium','Elite']:
+        return Response({'message': 'Invalid plan selected. Choose either "basic"  or "standard"or "premium"or "elite".'}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
         user_profile = UserProfile.objects.get(user=request.user)
@@ -119,7 +120,7 @@ def create_order(request):
     Creates an order for the selected plan and updates the user profile with the plan details upon order creation.
     """
     plan_name = request.data.get('plan_name')
-    if plan_name not in ['basic', 'standard','premium','elite']:
+    if plan_name not in ['Basic', 'Standard','Premium','Elite']:
         return Response({'message': 'Invalid plan selected. Choose either "basic" or "standard" or "premium" or "elite".'}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
@@ -200,6 +201,15 @@ def handle_payment_callback(request):
         user_profile.payment_status = 'paid'
         user_profile.razorpay_payment_id = razorpay_payment_id
         user_profile.save()
+        
+        send_email_with_pdf(
+            transaction_id=razorpay_payment_id,
+            plan_name=plan.name,
+            price=plan.price,
+            expiry_date=user_profile.plan_expiration_date,
+            user_email=user_profile.user.email
+        )
+
 
         return Response({'message': 'Payment successful, plan activated!'}, status=200)
 
@@ -228,7 +238,7 @@ def initiate_payment(request):
         mobile = req_data.get("mobile")
         plan_name = req_data.get("plan_name")
         
-        if plan_name not in ['basic', 'standard','premium','elite']:
+        if plan_name not in ['Basic', 'Standard','Premium','Elite']:
             return Response({'message': 'Invalid plan selected. Choose either "basic" or "standard" or "premium" or "elite".'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Check for missing required fields
@@ -349,6 +359,15 @@ def verify_payment(request):
 
                 # Activate the plan using the activate_plan method
                 user_profile.activate_plan(plan)
+                
+                send_email_with_pdf(
+                transaction_id=merchant_transaction_id,
+                plan_name=plan.name,
+                price=plan.price,
+                expiry_date=user_profile.plan_expiration_date,
+                user_email=user_profile.user.email
+                )
+
 
                 # Redirect or respond with success
                 return redirect("http://localhost:8000/payment-success")
@@ -375,9 +394,24 @@ from django.shortcuts import render
 
 def payment_success(request):
     """Handle successful payments."""
-    return render(request, 'subscriptions\success.html')
+    return render(request, 'subscriptions/success.html')
 
 def payment_failed(request):
     """Handle failed payments."""
     return render(request, 'subscriptions/failed.html')
 
+
+
+from django.http import HttpResponse
+from .utils import send_email_with_pdf  # Adjust the import based on where you place the function
+
+def example_view(request):
+    # Example data
+    transaction_id = '12345'
+    plan_name = 'Premium_Plan'
+    price = 19.99
+    expiry_date = 30
+    user_email = 'rajanappdeveloper@gmail.com'  
+    
+    # Call the function to send the invoice
+    return send_email_with_pdf(transaction_id, plan_name, price, expiry_date, user_email)

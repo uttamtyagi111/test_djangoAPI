@@ -17,6 +17,7 @@ urlpatterns = [
     path("verify-payment/", views.verify_payment, name="verify_payment"),
     path('payment-success/', views.payment_success, name='payment_success'),
     path('payment-failed/', views.payment_failed, name='payment_failed'),
+    path('send-invoice/', views.example_view, name='send_invoice'),
     # path('payment/phonepe/create/', views.create_phonepe_order, name='create_phonepe_order'),
     # path('payment/phonepe/callback/', views.handle_phonepe_payment_callback, name='handle_phonepe_payment_callback'),
 ]

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome Card</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+      }
+      .bg-container {
+        width: 400px;
+        height: 1010px;
+        background: url("https://emailbulkshoot.s3.ap-southeast-2.amazonaws.com/assests+for+Email+Automation/Frame+1010107803hgyh.png")
+          no-repeat center center;
+        background-size: cover;
+        /* border-radius: 15px; */
+        padding: 30px;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        position: relative; /* Make container position relative for absolute positioning of logo */
+      }
+      .logo {
+        position: absolute;
+        top: 10px;
+        left: 20px;
+        width: 150px;
+      }
+      .content-box {
+        position: relative;
+        background: #F2EFEF;
+        border-radius: 10px;
+        width: 100%;
+        min-height: 450px;
+        margin-top: -170px;
+        text-align: center;
+        /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border-radius: 70px;
+      }
+      .content-box img.main-image {
+        width: 300px;
+        height: auto;
+        position: absolute;
+        top: -85px;
+        left: 53%;
+        transform: translateX(-50%);
+      }
+      .content-box h2 {
+        color: #333;
+        font-size: 22px;
+        margin-top: 175px;
+        margin-bottom: 10px;
+        padding: 0px;
+      }
+      .content-box p {
+        color: #555;
+        font-size: 12px;
+        line-height: 18px;
+        margin-bottom: 20px;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+        width: 250px;
+      }
+      .features {
+        display: flex;
+        justify-content: space-between;
+        width: 80%;
+        margin-bottom: 20px;
+      }
+      .feature {
+        text-align: center;
+        width: 35%;
+      }
+      .feature img {
+        width: 70px;
+        height: 70px;
+        margin-bottom: 10px;
+        background-color:#338dfb;
+        padding: 20px;
+        border-radius: 20%;
+      }
+      .feature h3 {
+        font-size: 10px;
+        color: #333;
+        width:80px;
+       margin-left: 12px;
+      }
+      .feature p {
+        font-size: 10px;
+        color: #555;
+        width: 100px;
+        margin-top: 5px;
+        line-height: 13px;
+      }
+      .button-container {
+        text-align: center;
+        margin-top: 10%;
+      }
+      .button {
+        background-color: #338DFB;
+        color: white;
+        /* padding: 40px; */
+        padding: 20px 50px;
+        font-size: 24px;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      }
+      .button:hover {
+        background-color: #338DFB;
+      }
+      .container {
+        background-color: white;
+        width: 350px;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border-top-left-radius: 70px;
+        border-bottom-left-radius: 70px;
+        color: #338DFB;
+        overflow: hidden;
+        margin-bottom: -10%;
+      }
+      .image img {
+        height: 80px;
+        width: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+      .footer-container {
+        text-align: center;
+        color: white;
+        font-family: Arial, sans-serif;
+        margin-top: 1100px;
+        position: absolute;
+      }
+      .footer-container h2 {
+        color: white;
+        font-size: 20px;
+      }
+      .footer-container p {
+        margin: 5px 0;
+        font-size: 14px;
+        color: white;
+      }
+      .button-container {
+  text-align: center;
+  margin-top: 10%;
+  position: relative; /* Allow absolute positioning inside */
+}
+.button {
+  background-color: #338DFB;
+  color: white;
+  padding: 20px 50px;
+  font-size: 24px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  position: relative; /* Make it the reference for absolute children */
+}
+.button img {
+  position: absolute;
+  width: 20px; /* Adjust size */
+  height: 20px;
+}
+.button .top-left {
+  top: -10px;
+  left: -20px;
+}
+.button .bottom-right {
+  bottom: 0px;
+  right: -20px;
+}
+    </style>
+  </head>
+  <body>
+    <div class="bg-container">
+      <!-- Logo positioned top-left -->
+      <img
+        class="logo"
+        src="https://emailbulkshoot.s3.ap-southeast-2.amazonaws.com/assests+for+Email+Automation/techserve+logo.png"
+        alt="Logo"
+      />
+      <div class="content-box">
+        <img class="main-image"
+          src="https://emailbulkshoot.s3.ap-southeast-2.amazonaws.com/assests+for+Email+Automation/bro.png"
+          alt="Welcome Image"
+        />
+        <h2>Welcome to the team</h2>
+        <p>
+          Starting a new job at a new company can be pretty stressful. It's a
+          mixture of emotions, so we want to help ease those nerves!
+        </p>
+        <div class="features">
+          <div class="feature">
+            <img
+              src="https://emailbulkshoot.s3.ap-southeast-2.amazonaws.com/Group.png"
+              alt="Icon 1"
+            />
+            <h3>Company Vision and mission</h3>
+            <p>Learn about our mission and values.</p>
+          </div>
+          <div class="feature">
+            <img
+              src="https://emailbulkshoot.s3.ap-southeast-2.amazonaws.com/Vector.png"
+              alt="Icon 2"
+            />
+            <h3>Your Onboarding kits</h3>
+            <p>Get all the essential information.</p>
+          </div>
+          <div class="feature">
+            <img
+              src="https://emailbulkshoot.s3.ap-southeast-2.amazonaws.com/Vector+(1).png"
+              alt="Icon 3"
+            />
+            <h3>Onboarding Process</h3>
+            <p>Know about our timeline.</p>
+          </div>
+        </div>
+      </div>
+      <div class="button-container">
+        <a href="#" class="button">
+          <img src="https://emailbulkshoot.s3.ap-southeast-2.amazonaws.com/staRRR.png" class="top-left" />
+          Visit our site
+          <img src="https://emailbulkshoot.s3.ap-southeast-2.amazonaws.com/staRRR.png" class="bottom-right" />
+        </a>
+      </div>
+    </div>
+      <div class="container" style="margin-left: 20px; margin-top: 550px; position: absolute; height: 120px;  ">
+        <div>
+          <p style="width: 150px; color: #338DFB; font-size: 10px; margin-top: 0px; margin-left: 40px;">
+            By joining ultimate, you’ve got 50+ folks around you who form a really great support community.
+          </p>
+          <!-- Small icon version of the image -->
+          <div style=" margin-top: -5px; ">
+            <img src="https://emailbulkshoot.s3.ap-southeast-2.amazonaws.com/staRRR.png" alt="Icon" style="width: 30px; height: 30px; object-fit: contain;">
+          </div>
+          <p style="width: 150px; color: #338DFB; font-size: 10px; margin-left: 40px; margin-top: -10px;">
+            Wish Geek Techserve post on fostering Inclusivity at Ultimate is a helpful reminder of how we can create a welcoming space.
+          </p>
+        </div>
+        <div>
+          <img
+            src="https://emailbulkshoot.s3.ap-southeast-2.amazonaws.com/assests+for+Email+Automation/image+237.png"
+            style="width: 170px; height: 150px;"
+          />
+        </div>
+      </div>
+    <div class="footer-container" style="margin-top: 980px; margin-bottom: 100px;
+    position: absolute; line-height: 12px;">
+      <h2 style="font-size: 16px; font-weight: 400;">We can't wait to get to know you!</h2>
+      <p style="font-size: 12px; margin-top: 10px;">support mail: hr@wishgeekstechserve.com</p>
+      <p style="font-size: 12px; margin-top: 10px;">Contact Us: 8700133076</p>
+      <a href="#" style="margin-bottom: 20px; color: white; font-size: 14px;">Unsubscribe</a>
+    </div>
+  </body>
+</html>
